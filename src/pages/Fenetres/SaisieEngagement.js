@@ -399,8 +399,8 @@ function SaisieEngagement(props) {
   ////////////// Droits de l'utilisateur
   var MachaineDeCrypte = CryptFunc(localStorage.getItem('_Drt'), 0)
   const leMenu = GroupBy(MachaineDeCrypte)
-  const DroitsUser = leMenu.group['Intégrations'][1]
-
+  const DroitsUser = leMenu.group['Engagements'][1]
+ 
   // fonction pas assez de droits
   const noRightFunc = () => {
     setNotify({

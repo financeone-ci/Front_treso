@@ -247,13 +247,13 @@ const enteteCol = [
         ),
       },
     
-  ]
+  ] 
 
 
       ////////////// Droits de l'utilisateur
   var MachaineDeCrypte = CryptFunc(localStorage.getItem('_Drt'), 0)
   const leMenu = GroupBy(MachaineDeCrypte)
-  const DroitsUser = leMenu.group['Intégrations'][3]
+  const DroitsUser = leMenu.group['Engagements'][3]
 
   // fonction pas assez de droits
   const noRightFunc = () =>{

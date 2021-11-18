@@ -277,7 +277,7 @@ function Rejets(props) {
       width: 100,
       columnResizeIcon: true,
       // resizable: 'true',
-    },
+    }, 
     {
       field: 'DATE_IMPORTATION',
       hide: false,
@@ -292,7 +292,7 @@ function Rejets(props) {
   ////////////// Droits de l'utilisateur
   var MachaineDeCrypte = CryptFunc(localStorage.getItem('_Drt'), 0)
   const leMenu = GroupBy(MachaineDeCrypte)
-  const DroitsUser = leMenu.group['Intégrations'][2]
+  const DroitsUser = leMenu.group['Engagements'][2]
 
   // fonction pas assez de droits
   const noRightFunc = () => {

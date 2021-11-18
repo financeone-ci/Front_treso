@@ -328,7 +328,7 @@ function IntEngagements(props) {
     ////////////// Droits de l'utilisateur
   var MachaineDeCrypte = CryptFunc(localStorage.getItem('_Drt'), 0)
   const leMenu = GroupBy(MachaineDeCrypte)
-  const DroitsUser = leMenu.group['Intégrations'][0]
+  const DroitsUser = leMenu.group['Engagements '][0]
 
   // fonction pas assez de droits
   const noRightFunc = () => {
