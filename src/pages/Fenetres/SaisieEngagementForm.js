@@ -122,11 +122,8 @@ function SaisieEngagementForm(props) {
         title={props.titreModal}
         handleClose={props.handleClose}
         open={props.open}>
-          {
-            mutationEdit.isLoading && 
-            <SpinnerForm />
-          }
-        
+        {mutationEdit.isLoading && <SpinnerForm />}
+
         <Formik
           noValidate
           initialValues={{
@@ -164,7 +161,6 @@ function SaisieEngagementForm(props) {
                     date_engagement: '',
                   },
                 })
-                // setDefautCodeBudget(null)
               },
             })
           }}>

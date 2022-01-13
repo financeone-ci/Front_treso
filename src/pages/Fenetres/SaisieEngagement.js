@@ -65,7 +65,7 @@ function SaisieEngagement(props) {
   const fetchEngagements = async () => {
     const response = await fetch(
       Constantes.URL +
-        '/engagements.php?type=R&debut=' +
+        'engagements.php?type=R&debut=' +
         initial.debut +
         '&fin=' +
         initial.fin,
@@ -83,6 +83,7 @@ function SaisieEngagement(props) {
     )
     return response.json()
   }
+
   const mutationDelete = useMutation(supprEngagement, {
     onError: (data) => {
       setOpens_(false)
@@ -131,7 +132,7 @@ function SaisieEngagement(props) {
 
   const notificationLanceur = (type, message) => {
     setNotify({ message: message, type: type })
-     setOpenNotif(true)
+    setOpenNotif(true)
   }
 
   // Entetes du tableau
@@ -280,9 +281,7 @@ function SaisieEngagement(props) {
       width: 100,
       columnResizeIcon: true,
     },
-   
 
-   
     {
       field: 'Actions',
       width: 125,
@@ -293,34 +292,33 @@ function SaisieEngagement(props) {
             aria-label='update'
             size='small'
             onClick={() => {
-              e.row.ID_STATUT_ENGAGEMENT < 2 ?
-
-              DroitsUser.droits_modifier == 1
-                ? handleClickOpenSaisieEngagement(
-                    e.row.id,
-                    e.row.NUM_ENGAGEMENT,
-                    e.row.BENEFICIAIRE,
-                    e.row.REF_BENEFICIAIRE,
-                    e.row.MONTANT,
-                    e.row.NUM_BON,
-                    e.row.MOTIF,
-                    e.row.TYPE_IMPORT,
-                    e.row.USER_IMPORT,
-                    e.row.DATE_ECHEANCE,
-                    e.row.ID_STATUT_ENGAGEMENT,
-                    e.row.CODE_BUDGET,
-                    e.row.DATE_IMPORTATION,
-                    e.row.IDIMPORT,
-                    e.row.DATE_ENGAGEMENT,
-                    e.row.REF_MARCHE,
-                    e.row.RETENUE,
-                    e.row.TAXE,
+              e.row.ID_STATUT_ENGAGEMENT < 2
+                ? DroitsUser.droits_modifier == 1
+                  ? handleClickOpenSaisieEngagement(
+                      e.row.id,
+                      e.row.NUM_ENGAGEMENT,
+                      e.row.BENEFICIAIRE,
+                      e.row.REF_BENEFICIAIRE,
+                      e.row.MONTANT,
+                      e.row.NUM_BON,
+                      e.row.MOTIF,
+                      e.row.TYPE_IMPORT,
+                      e.row.USER_IMPORT,
+                      e.row.DATE_ECHEANCE,
+                      e.row.ID_STATUT_ENGAGEMENT,
+                      e.row.CODE_BUDGET,
+                      e.row.DATE_IMPORTATION,
+                      e.row.IDIMPORT,
+                      e.row.DATE_ENGAGEMENT,
+                      e.row.REF_MARCHE,
+                      e.row.RETENUE,
+                      e.row.TAXE,
+                    )
+                  : noRightFunc()
+                : notificationLanceur(
+                    'error',
+                    'Engagement en cours \r de règlement',
                   )
-                : noRightFunc()
-                :
-               notificationLanceur('error', 'Engagement en cours \r de règlement')
-                  
-                
             }}>
             <CreateIcon
               fontSize='inherit'
@@ -399,15 +397,14 @@ function SaisieEngagement(props) {
   ////////////// Droits de l'utilisateur
   var MachaineDeCrypte = CryptFunc(localStorage.getItem('_Drt'), 0)
   const leMenu = GroupBy(MachaineDeCrypte)
-  const DroitsUser = leMenu.group['Engagements'][1]
- 
+  const DroitsUser = leMenu.group['Intégrations'][1]
+
   // fonction pas assez de droits
   const noRightFunc = () => {
     setNotify({
       type: 'error',
       message: 'Droits insuffisants',
     })
-
     setOpenNotif(true)
   }
 

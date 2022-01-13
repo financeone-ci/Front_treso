@@ -21,7 +21,7 @@ import Banque from '../../pages/Fenetres/Banque'
 import Compte from '../../pages/Fenetres/Compte'
 import AuditsUsers from '../../pages/Fenetres/AuditsUsers'
 import AuditsSystem from '../../pages/Fenetres/AuditsSystem'
-import Sites from '../../pages/Fenetres/Sites'
+import VueSites from '../../pages/Fenetres/sites/VueSites'
 import Rejets from '../../pages/Fenetres/Rejets'
 import Securite from '../../pages/Fenetres/Securite'
 import Parametrage from '../../pages/Fenetres/Parametrage'
@@ -51,6 +51,7 @@ import Approuver from '../../pages/Fenetres/Approuver'
 import Cheques from '../../pages/Fenetres/Cheques'
 import Virements from '../../pages/Fenetres/Virements'
 import Traites from '../../pages/Fenetres/Traites'
+import VueRetrais from '../../pages/Fenetres/VueRetrais'
 import AccountBalanceIcon from '@material-ui/icons/AccountBalance'
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline'
 
@@ -172,12 +173,11 @@ function Chemins(props) {
           )}
         />
         <Route
-          path={'/accueil/administration/sites'}
+          path={'/accueil/parametre/sites'}
           render={() => (
-            <Sites
+            <VueSites
               icone={<AccountTreeIcon fontSize='large' />}
               titre='Sites'
-              infoCookie={props.infoCookie}
             />
           )}
         />
@@ -408,6 +408,16 @@ function Chemins(props) {
             <Traites
               icone={<AccountBalanceIcon fontSize='large' />}
               titre='Chèques'
+              infoCookie={props.infoCookie}
+            />
+          )}
+        />
+        <Route
+          path={'/accueil/tresorerie/retrait-paiement'}
+          render={() => (
+            <VueRetrais
+              icone={<AccountBalanceIcon fontSize='large' />}
+              titre='Retraits paiements'
               infoCookie={props.infoCookie}
             />
           )}

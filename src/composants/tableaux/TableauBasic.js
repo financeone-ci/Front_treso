@@ -32,15 +32,15 @@ const useStyles = makeStyles(
 )
 
 function TableauBasic(props) {
-  const [dates, setDates] = useState(props.dates || "" )
+  const [dates, setDates] = useState(props.dates || '')
   // Entete et lignes du tableau
   const datax = {
     columns: props.col,
     rows: props.donnees,
   }
-
+  // style={{ height: 550, width: '100%', cursor: 'pointer' }}
   return (
-    <div style={{ height: 400, width: '100%' }}>
+    <div style={{ height: 550, width: '100%', cursor: 'pointer' }}>
       <div style={{ display: 'flex', height: '100%' }}>
         <div style={{ flexGrow: 1 }}>
           <XGrid
@@ -49,16 +49,12 @@ function TableauBasic(props) {
             localeText={frFR.props.MuiDataGrid.localeText}
             rowHeight={40}
             onRowClick={props.onRowClick}
-            autoPageSize={true}
-            {...props}
             checkboxSelection={false}
-            {...props}        
+            {...props}
           />
         </div>
       </div>
     </div>
   )
-
-  return <></>
 }
 export default React.memo(TableauBasic)

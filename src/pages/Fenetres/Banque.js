@@ -240,6 +240,12 @@ function Banque(props) {
   }, [])
 
   // Charger les mesures de la banque
+  // const handleClickOpenMesure = useCallback(async (pid) => {
+  //   let response = await axios(Constantes.URL + `/Mesures.php?type=R&id=${pid}`)
+  //   setInitMesure(response.data.infos)
+  //   setOpenMesure(true)
+  // }, [])
+
   const handleClickOpenMesure = useCallback(async (pid) => {
     let response = await axios(Constantes.URL + `/Mesures.php?type=R&id=${pid}`)
     setInitMesure(response.data.infos)

@@ -11,9 +11,9 @@ import { Formik, Form, Field, useField, ErrorMessage } from 'formik'
 import { Paper, Grid } from '@material-ui/core'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import SpinnerForm from '../../composants/controls/spinner/SpinnerForm'
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Radio from '@material-ui/core/Radio'
+import RadioGroup from '@material-ui/core/RadioGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -38,52 +38,44 @@ function PaiementForm(props) {
   const [listCategorieFlux, setListCategorieFlux] = useState([])
   const [listFlux, setListFlux] = useState([])
   const [listCategoriePaiement, setListCategoriePaiement] = useState([])
-  const [typePaie, setTypePaie] = useState("") // type de paiement
-
-
+  const [typePaie, setTypePaie] = useState('') // type de paiement
 
   // choisir le sens
-  const actualisationCat = (filterSens="", type="") =>{
-    if(type == "auto"){
-                      axios
-                      .post('categorie_flux.php?type=R' , {filter: filterSens})
-                      .then((response) => {
-                        setListCategorieFlux(response.data.infos)
-                      })
-    }else{
-                      axios
-                      .post('categorie_flux.php?type=R&filter=' + filterSens , {filter: filterSens})
-                      .then((response) => {
-                        setListCategorieFlux(response.data.infos)
-                       // setDefautCategorieFlux(null)
-                      })
+  const actualisationCat = (filterSens = '', type = '') => {
+    if (type == 'auto') {
+      axios
+        .post('categorie_flux.php?type=R', { filter: filterSens })
+        .then((response) => {
+          setListCategorieFlux(response.data.infos)
+        })
+    } else {
+      axios
+        .post('categorie_flux.php?type=R&filter=' + filterSens, {
+          filter: filterSens,
+        })
+        .then((response) => {
+          setListCategorieFlux(response.data.infos)
+        })
     }
-            
   }
 
-  useEffect(() => { 
-    actualisationCat("", "auto")
-}, [])
- // Charger le combo nature
- useEffect(() => {
-  fetch(Constantes.URL + '/flux.php?type=R')
-    .then((response) => response.json())
-    .then((data) => setListFlux(data.infos))
-}, [])
+  useEffect(() => {
+    actualisationCat('', 'auto')
+  }, [])
+  // Charger le combo nature
+  useEffect(() => {
+    fetch(Constantes.URL + '/flux.php?type=R')
+      .then((response) => response.json())
+      .then((data) => setListFlux(data.infos))
+  }, [])
 
- 
   const schema = yup.object().shape({
     compte: yup.string().required('Champs obligatoire'),
     budget: yup.string().required('Champs obligatoire'),
     categorie: yup.string().required('Champs obligatoire'),
     montant: yup.number().required('Champs obligatoire'),
     //type: yup.number().required('Champs obligatoire'),
-     
-  }) 
-   
-
-
-
+  })
 
   // Charger le combo budget
   useEffect(() => {
@@ -92,14 +84,14 @@ function PaiementForm(props) {
       .then((data) => setListCodeBudgetaire(data.infos))
   }, [])
 
-    // Charger le combo compte
-    useEffect(() => {
-      fetch(Constantes.URL + '/compte.php?type=R')
-        .then((response) => response.json())
-        .then((data) => setListCompte(data.infos))
-    }, [])
-  
-      // Charger le combo categorie flux
+  // Charger le combo compte
+  useEffect(() => {
+    fetch(Constantes.URL + '/compte.php?type=R')
+      .then((response) => response.json())
+      .then((data) => setListCompte(data.infos))
+  }, [])
+
+  // Charger le combo categorie flux
   useEffect(() => {
     fetch(Constantes.URL + '/categorie_paiement.php?type=R')
       .then((response) => response.json())
@@ -110,27 +102,24 @@ function PaiementForm(props) {
   const editEngagement = async (values) => {
     let donnees = ''
     let lien = 'paiement.php?type=C&jeton='
-    if(props.initial_.typaiement == 'partiel'  ){
+    if (props.initial_.typaiement == 'partiel') {
       lien = 'paiement.php?type=C&jeton='
     }
-    if(props.initial_.typaiement == 'fusion'  ){
+    if (props.initial_.typaiement == 'fusion') {
       lien = 'paiement.php?type=F&jeton='
     }
     // Création d'engagement
     if (props.initial_.id.length > 0) {
-      
-     // console.log(values)
+      // console.log(values)
       const resp = await axios
         .post(lien + props.infoCookie, values)
         .then((response) => {
           console.log(response.data)
           donnees = response
         })
-       
-        props.handleClose()
-       
-      
-    } else { 
+
+      props.handleClose()
+    } else {
       /* */
     }
     return donnees.data
@@ -155,19 +144,16 @@ function PaiementForm(props) {
         title={props.titreModal}
         handleClose={props.handleClose}
         open={props.open}>
-          {
-            mutationEdit.isLoading && 
-            <SpinnerForm />
-          }
-        
+        {mutationEdit.isLoading && <SpinnerForm />}
+
         <Formik
           noValidate
           initialValues={{
             id: props.initial_.id,
-            compte: "",
-            budget: "",
-            categorie: "",
-            type: "",
+            compte: '',
+            budget: '',
+            categorie: '',
+            type: '',
             montant: 0,
           }}
           validationSchema={schema}
@@ -180,7 +166,7 @@ function PaiementForm(props) {
                     budget: '',
                     categorie: '',
                     nature: '',
-                    type: "",
+                    type: '',
                     montant: 0,
                   },
                 })
@@ -206,9 +192,7 @@ function PaiementForm(props) {
                 value={props.initial_.id}
               />
               <Grid container spacing={2}>
-
-
-              <Grid item xs={6} sm={6} lg={6}>
+                <Grid item xs={6} sm={6} lg={6}>
                   <Controls.ComboSingleState
                     name='compte'
                     code='CODE_COMPTE'
@@ -224,15 +208,6 @@ function PaiementForm(props) {
                     terror={errors.compte && true}
                   />
                 </Grid>
-
-               
-
-                
-
-                
-
-                
-
                 <Grid item xs={6} sm={6} lg={6}>
                   <Controls.ComboSingleState
                     name='budget'
@@ -248,7 +223,6 @@ function PaiementForm(props) {
                     terror={errors.budget && true}
                   />
                 </Grid>
-                
                 <Grid item xs={6} sm={6} lg={6}>
                   <Controls.ComboSingleState
                     name='categorie'
@@ -264,7 +238,6 @@ function PaiementForm(props) {
                     terror={errors.categorie && true}
                   />
                 </Grid>{' '}
-               
                 <Grid item xs={6} sm={6} lg={6}>
                   <Controls.ComboSingleState
                     name='nature'
@@ -280,77 +253,77 @@ function PaiementForm(props) {
                     terror={errors.nature && true}
                   />
                 </Grid>{' '}
-                
-                 <Grid item xs={6} sm={6} lg={6}>
-                {
-                  props.initial_.typaiement !== "fusion" && 
-                <RadioGroup aria-label="type" name="type" value={values.type}  onChange={(e, value) => {
-                      setFieldValue(
-                        'type',
-                        value !== null ? value : "",
-                      )
-                      setTypePaie(value)
-                      
-                    }}>
-              
-                  <FormControlLabel value="Pourcentage" control={<Radio />} label="Partiel Pourcentage" />
-                  <FormControlLabel value="Tranche" control={<Radio />} label="Partiel Tranche" />
-                  <FormControlLabel value="Total" control={<Radio />} label="Total" />
-       
-                </RadioGroup>
-                }  
-                
-                  </Grid>
                 <Grid item xs={6} sm={6} lg={6}>
-                  {   props.initial_.typaiement !== "fusion" ?
-                    typePaie == "Pourcentage" ?
-                    <Controls.TextInput
-                    variant='outlined'
-                    margin='normal'
-                    fullWidth
-                    id='valeur'
-                    label='Pourcentage'
-                    type='number'
-                    thelperText={errors.pourcentage}
-                    terror={errors.pourcentage && true}
-                    name='montant'
-                  />
-                  :
-                    typePaie == "Tranche" ?
-                    <Controls.TextInput
-                    variant='outlined'
-                    margin='normal'
-                    fullWidth
-                    id='valeur'
-                    label='Montant'
-                    type='number'
-                    thelperText={errors.pourcentage}
-                    terror={errors.pourcentage && true}
-                    name='montant'
-                  />
-                  :
-                    typePaie == "" &&
-                    <></>
-
-                    : 
+                  {props.initial_.typaiement !== 'fusion' && (
+                    <RadioGroup
+                      aria-label='type'
+                      name='type'
+                      value={values.type}
+                      onChange={(e, value) => {
+                        setFieldValue('type', value !== null ? value : '')
+                        setTypePaie(value)
+                      }}>
+                      <FormControlLabel
+                        value='Pourcentage'
+                        control={<Radio />}
+                        label='Partiel Pourcentage'
+                      />
+                      <FormControlLabel
+                        value='Tranche'
+                        control={<Radio />}
+                        label='Partiel Tranche'
+                      />
+                      <FormControlLabel
+                        value='Total'
+                        control={<Radio />}
+                        label='Total'
+                      />
+                    </RadioGroup>
+                  )}
+                </Grid>
+                <Grid item xs={6} sm={6} lg={6}>
+                  {props.initial_.typaiement !== 'fusion' ? (
+                    typePaie == 'Pourcentage' ? (
+                      <Controls.TextInput
+                        variant='outlined'
+                        margin='normal'
+                        fullWidth
+                        id='valeur'
+                        label='Pourcentage'
+                        type='number'
+                        thelperText={errors.pourcentage}
+                        terror={errors.pourcentage && true}
+                        name='montant'
+                      />
+                    ) : typePaie == 'Tranche' ? (
+                      <Controls.TextInput
+                        variant='outlined'
+                        margin='normal'
+                        fullWidth
+                        id='valeur'
+                        label='Montant'
+                        type='number'
+                        thelperText={errors.pourcentage}
+                        terror={errors.pourcentage && true}
+                        name='montant'
+                      />
+                    ) : (
+                      typePaie == '' && <></>
+                    )
+                  ) : (
                     <Grid item xs={6} sm={6} lg={6}>
-                    Montant à payer:  {props.sumMontant}
+                      Montant à payer: {props.sumMontant}
                     </Grid>
-                   
-
-                  }
-                  
-                  </Grid>
-                
+                  )}
+                </Grid>
               </Grid>
-             
+
               <div className={classes.buton}>
                 <Controls.ButtonLabel
                   color='primary'
                   onClick={() => setTypeSubmit({ type: 1 })}>
-                  Valider 
+                  Valider
                 </Controls.ButtonLabel>
-                
               </div>
             </Form>
           )}

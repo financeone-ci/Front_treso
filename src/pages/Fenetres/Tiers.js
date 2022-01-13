@@ -54,16 +54,15 @@ function Tiers(props) {
     fournisseur: '',
     mp: '',
     nom: '',
-    ref: '',  
-    tel: '',  
+    ref: '',
+    tel: '',
     id: 0,
-    type: []
+    type: [],
   })
   const [notify, setNotify] = useState({
     type: '',
     message: '',
   })
-
 
   const handleCloseModal_ = () => {
     setOpens_(false)
@@ -106,13 +105,12 @@ function Tiers(props) {
   const FuncSuppr = (id) => {
     setOpens_(true)
     setidTiers(id)
-  } 
-  
-  var history = useHistory()
-  const VersCompte =(code)=>{
-    history.push('/accueil/parametre/compte-tiers/'+ code)
   }
 
+  var history = useHistory()
+  const VersCompte = (code) => {
+    history.push('/accueil/parametre/compte-tiers/' + code)
+  }
 
   // Entetes du tableau
   const enteteCol = [
@@ -159,7 +157,7 @@ function Tiers(props) {
       columnResizeIcon: true,
       // resizable: 'true',
     },
-    
+
     {
       field: 'NOM_REPRESENTANT_TIERS',
       hide: false,
@@ -179,9 +177,9 @@ function Tiers(props) {
             aria-label='update'
             size='small'
             onClick={() => {
-              DroitsUser.droits_modifier == 1
-                ? <>
-                    {handleClickOpenTiers(
+              DroitsUser.droits_modifier == 1 ? (
+                <>
+                  {handleClickOpenTiers(
                     e.row.id,
                     e.row.ADRESSE_TIERS,
                     e.row.BENEFICIAIRE_TIERS,
@@ -193,15 +191,15 @@ function Tiers(props) {
                     e.row.NOM_REPRESENTANT_TIERS,
                     e.row.REF_TIERS,
                     e.row.TEL_TIERS,
-                    e.row.type
-                )}
-                    {
+                    e.row.type,
+                  )}
+                  {
                     //handleClickOpenTiers(e.row.id)
-                    }
+                  }
                 </>
-                    
-               
-                : noRightFunc()
+              ) : (
+                noRightFunc()
+              )
             }}>
             <CreateIcon
               fontSize='inherit'
@@ -225,9 +223,7 @@ function Tiers(props) {
           </IconButton>
 
           <MenuTable icone={<ListIcon />}>
-            <MenuItem
-              onClick={() =>   VersCompte(e.row.CODE_TIERS)
-              }>
+            <MenuItem onClick={() => VersCompte(e.row.CODE_TIERS)}>
               Comptes
             </MenuItem>
           </MenuTable>
@@ -247,47 +243,39 @@ function Tiers(props) {
     setLoader(false)
   }, [])
 
- 
-      
-      // Ouverture modal profils
+  // Ouverture modal profils
   const handleClickOpenTiers = (
     idTiers = 0,
-    adresseTiers= '',
-    beneficiaireTiers= '',
-    civiliteTiers= '',
-    codeTiers= '',
-    fonctionTiers= '',
-    fournisseurTiers= '',
-    mpTiers='',
-    nomTiers= '',
-    refTiers= '',  
-    telTiers= '',  
-    typeTiers = []
-    
+    adresseTiers = '',
+    beneficiaireTiers = '',
+    civiliteTiers = '',
+    codeTiers = '',
+    fonctionTiers = '',
+    fournisseurTiers = '',
+    mpTiers = '',
+    nomTiers = '',
+    refTiers = '',
+    telTiers = '',
+    typeTiers = [],
   ) => {
-    
-     
     setInit({
-     id: idTiers, 
-    adresse: adresseTiers,
-    beneficiaire: beneficiaireTiers,
-    civilite: civiliteTiers,
-    code: codeTiers,
-    fonction: fonctionTiers,
-    fournisseur: fournisseurTiers,
-    mp: mpTiers,
-    nom: nomTiers,
-    ref: refTiers,  
-    tel: telTiers, 
-    type: typeTiers,
+      id: idTiers,
+      adresse: adresseTiers,
+      beneficiaire: beneficiaireTiers,
+      civilite: civiliteTiers,
+      code: codeTiers,
+      fonction: fonctionTiers,
+      fournisseur: fournisseurTiers,
+      mp: mpTiers,
+      nom: nomTiers,
+      ref: refTiers,
+      tel: telTiers,
+      type: typeTiers,
     })
-    
+
     setOpenTiers(true)
-
-
-    
   }
-  
+
   const handleCloseUser = () => {
     setOpenTiers(false)
   }
@@ -306,15 +294,13 @@ function Tiers(props) {
 
     setOpenNotif(true)
   }
- 
-  useEffect(()=>{
+
+  useEffect(() => {
     // setLoader(true)
-     fetch(Constantes.URL + '/tiers/type_tiers.php?type=R')
-       .then((response) => response.json())
-       .then((data) => setListTypeTiers(data.infos)
-       )
-   },[])
-   
+    fetch(Constantes.URL + '/tiers/type_tiers.php?type=R')
+      .then((response) => response.json())
+      .then((data) => setListTypeTiers(data.infos))
+  }, [])
 
   const classes = useStyles()
   return (
@@ -360,13 +346,11 @@ function Tiers(props) {
             listTypeTiers={listTypeTiers}
             setListTiers={setListTiers}
             initial_={init}
-          //  defautType={defautType}
+            //  defautType={defautType}
             handleClose={handleCloseUser}
             open={openTiers}
             titreModal={
-              init.id == ''
-                ? 'Nouveau tiers'
-                : 'Modifier tiers: ' + init.code
+              init.id == '' ? 'Nouveau tiers' : 'Modifier tiers: ' + init.code
             }
             infoCookie={props.infoCookie}
           />

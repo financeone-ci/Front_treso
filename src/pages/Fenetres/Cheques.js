@@ -47,7 +47,7 @@ function Cheques(props) {
   const [listId, setListId] = useState([]) // liste des chèques non imrpimés
   const [paie, setPaie] = useState([]) // compte sélectionnée
   const [position, setPosition] = useState([])
-  const [idPdf, setIdPdf] = useState('')
+  const [compte, setCompte] = useState('')
   const [cookies, setCookie] = useCookies(['_Jst'])
   // Permet l'actualisation
   const queryClient = useQueryClient()
@@ -96,17 +96,6 @@ function Cheques(props) {
     paie.map((item) => {
       listId.includes(item.id) && listCheques.push(item)
     })
-/*
-    const decoupeFunc = (mot, longueur ) => {
-      
-      let premierePartie = mot.substring(0, longueur)
-     let  lastSpace = premierePartie.lastIndexOf(" ")
-      premierePartie = mot.substring(0, lastSpace)
-      let deuxiemePartie = mot.substring(lastSpace + 1)
-      console.log(premierePartie)
-      console.log(deuxiemePartie)
-    }
-    */
 
   // Fonction d'affichage du pdf
   function showPDF() {
@@ -144,7 +133,7 @@ function Cheques(props) {
         'left',
       )
       doc.text(
-        "*"+page.MONTANT_PAIEMENT2+"*",
+        '*' + page.MONTANT_PAIEMENT2 + '*',
         position[0].X_MONTCHIFFRE,
         position[0].Y_MONTCHIFFRE,
         'left',
@@ -158,60 +147,58 @@ function Cheques(props) {
       // doc.text(page.date_fr, position[0].X_DATE, position[0].Y_DATE, 'left')
       doc.text(page.date_impr, position[0].X_DATE, position[0].Y_DATE, 'left')
       ///// montants en lettres
-    let montantLettres = DecoupeMontant( NumberToLetter(page.entier) + ' francs', position[0].LONG_BAR_CFR_LTR)
+      let montantLettres = DecoupeMontant(
+        NumberToLetter(page.entier) + ' francs',
+        position[0].LONG_BAR_CFR_LTR,
+      )
       doc.text(
-       montantLettres.un,
+        montantLettres.un,
         position[0].X_MONTLETTRE1,
         position[0].Y_MONTLETTRE1,
         'left',
       )
-      
-        doc.text(
-         montantLettres.deux,
-          position[0].X_MONTLETTRE2,
-          position[0].Y_MONTLETTRE2,
-          'left',
-        )
-      
-      
+
+      doc.text(
+        montantLettres.deux,
+        position[0].X_MONTLETTRE2,
+        position[0].Y_MONTLETTRE2,
+        'left',
+      )
+
       // ville
-        doc.text(
+      doc.text(
         position[0].SIEGE_SOCIAL,
-          position[0].X_VILLE,
-          position[0].Y_VILLE,
-          'left',
-        )
-     
-        
-////////////////////////COUPON
+        position[0].X_VILLE,
+        position[0].Y_VILLE,
+        'left',
+      )
 
-doc.text(
-  page.BENEFICIAIRE_PAIEMENT,
-  position[0].X_BENEF_COUP,
-  position[0].Y_BENEF_COUP,
-  'left',
-)
-doc.text(
-  "*"+page.MONTANT_PAIEMENT2+"*",
-  position[0].X_MONT_COUP,
-  position[0].Y_MONT_COUP,
-  'left',
-)
-doc.text(
-  page.date_impr,
-  position[0].X_DATE_COUP,
-  position[0].Y_DATE_COUP,
-  'left',
-)
- 
+      ////////////////////////COUPON
 
-
+      doc.text(
+        page.BENEFICIAIRE_PAIEMENT,
+        position[0].X_BENEF_COUP,
+        position[0].Y_BENEF_COUP,
+        'left',
+      )
+      doc.text(
+        '*' + page.MONTANT_PAIEMENT2 + '*',
+        position[0].X_MONT_COUP,
+        position[0].Y_MONT_COUP,
+        'left',
+      )
+      doc.text(
+        page.date_impr,
+        position[0].X_DATE_COUP,
+        position[0].Y_DATE_COUP,
+        'left',
+      )
     })
 
     //////////////////////////////////////////////////////////////////////////
     //////////////// // Positionnement des informations du chèque
     //////////////////////////////////////////////////////////////////////////
-    
+
     let login_user = ''
 
     //recuperation des infos depuis le cookie
@@ -248,11 +235,33 @@ doc.text(
     setVisiblePdf({ display: 'none' })
   }
 
-  //   console.log(listCheques[0])
-  const imprime = () => {
-    if (DroitsUser.droits_creer == 1) {
+  // Enregistrement des chèques imprimer
+  const UpdatePaiement = async () => {
+    const response = await fetch(
+      `${Constantes.URL}/imprimeCheq.php?id=${listId}`,
+    )
+    return response.json()
+  }
+
+  const mutationUdate = useMutation(UpdatePaiement, {
+    onError: (data) => {
+      setOpens_(false)
+      setNotify({ message: data.message, type: data.reponse })
+      setOpenNotif(true)
+    },
+    onSuccess: (data) => {
+      setNotify({ message: data.message, type: data.reponse })
+      queryClient.invalidateQueries('ListeCompte')
+      Loadpaiements(compte)
+      setOpens_(false)
       setOuvrePdf(true)
       showPDF()
+    },
+  })
+
+  const imprime = () => {
+    if (DroitsUser.droits_creer == 1) {
+      setOpens_(true)
     } else {
       noRightFunc()
     }
@@ -265,7 +274,7 @@ doc.text(
   }
 
   // console.log(ouvrePdf)
-  console.log(position[0])
+  // console.log(position[0])
   //console.log(listCheques)
 
   const classes = useStyles()
@@ -408,12 +417,12 @@ doc.text(
             <Grid container spacing={1}>
               <Grid item xs={4}>
                 <TableauBasic
-                  style={{ height: 550, width: '100%', cursor: 'pointer' }}
                   disableSelectionOnClick={true}
                   col={enteteTableComppes}
                   donnees={ListeCompte.data.infos}
                   onRowClick={(e) => {
                     Loadpaiements(e.row.id)
+                    setCompte(e.row.id)
                   }}
                   pagination
                   autoHeight
@@ -423,7 +432,6 @@ doc.text(
               </Grid>
               <Grid item xs={8}>
                 <TableauBasic
-                  style={{ height: 550, width: '100%' }}
                   disableSelectionOnClick={true}
                   col={enteteTablePaiements}
                   donnees={paie}
@@ -442,15 +450,15 @@ doc.text(
         </>
       )}
 
-      {/* <ModalOuiNon
+      <ModalOuiNon
         open={opens_}
         onClose={handleCloseModal_}
         titre={'Confirmer impression !'}
         message={'Voulez vous imprimer ce(s) chèque(s) ?'}
         non='Annuler'
         oui='Oui'
-        deconnect={() => ouvrePdfImprime()}
-      /> */}
+        deconnect={() => mutationUdate.mutate()}
+      />
       <Notification
         type={notify.type}
         message={notify.message}

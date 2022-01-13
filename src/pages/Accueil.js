@@ -30,7 +30,6 @@ import ControlJeton from '../functions/ControlJeton'
 
 const drawerWidth = 240
 
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -116,7 +115,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function Accueil() {
- // ControlJeton()
+  // ControlJeton()
   const [open, setOpen] = React.useState(true)
   const [infoCookie, setInfoCookie] = React.useState(true)
   const handleDrawerOpen = () => {
@@ -131,7 +130,7 @@ export default function Accueil() {
 
   // Controle du cookie
   var history = useHistory()
- 
+
   useEffect(() => {
     //Checks if location.pathname is not "/".
     const idInt = setInterval(() => {
@@ -142,7 +141,6 @@ export default function Accueil() {
           //var JetonDecrypt = CryptFunc(b[2], 0)
           var jeton = jwt.verify(b[2], Constantes.token)
           setInfoCookie(b[2])
-          
         } catch (error) {
           //jeton invalide
           // console.log(error)

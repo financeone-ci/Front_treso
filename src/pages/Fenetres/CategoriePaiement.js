@@ -19,7 +19,6 @@ import { Notification } from '../../composants/controls/toast/MyToast'
 import CryptFunc from '../../functions/CryptFunc'
 import GroupBy from '../../functions/GroupBy'
 
-
 const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(0.5),
@@ -31,13 +30,12 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function CategoriePaiement(props) {
+  // Lignes du tableau
+  const [listCategoriePaiement, setListCategoriePaiement] = useState([])
+  const [loader, setLoader] = useState(false)
+  const [openCategoriePaiement, setOpenCategoriePaiement] = useState(false)
 
-    // Lignes du tableau
-    const [listCategoriePaiement, setListCategoriePaiement] = useState([])
-    const [loader, setLoader] = useState(false)
-    const [openCategoriePaiement, setOpenCategoriePaiement] = useState(false)
-
-   // valeurs initiales
+  // valeurs initiales
   const [openNotif, setOpenNotif] = useState(false)
 
   const [opens_, setOpens_] = React.useState(false) // statut du modal suppression
@@ -55,7 +53,7 @@ function CategoriePaiement(props) {
     type: '',
     message: '',
   })
-  
+
   //
   const handleCloseModal_ = () => {
     setOpens_(false)
@@ -72,7 +70,7 @@ function CategoriePaiement(props) {
             type: response.data.reponse,
             message: response.data.message,
           })
-         
+
           setOpenNotif(true)
           //////////////////
           setLoader(true)
@@ -94,7 +92,6 @@ function CategoriePaiement(props) {
         console.log(error)
       })
     setOpens_(false)
-    
   }
 
   // Modal Supression du categorie paiement
@@ -131,7 +128,7 @@ function CategoriePaiement(props) {
       columnResizeIcon: true,
       // resizable: 'true',
     },
-  
+
     {
       field: 'Actions',
       width: 300,
@@ -141,18 +138,15 @@ function CategoriePaiement(props) {
           <IconButton
             aria-label='update'
             size='small'
-            onClick={() =>{
-              
-              DroitsUser.droits_modifier == 1 ?
-              handleClickOpenCategoriePaiement(
-                e.row.id,
-                e.row.CODE_CATEGORIE_PAIEMENT,
-                e.row.LIB_CATEGORIE_PAIEMENT,
-              )
-              : noRightFunc()
-            }
-              
-            }>
+            onClick={() => {
+              DroitsUser.droits_modifier == 1
+                ? handleClickOpenCategoriePaiement(
+                    e.row.id,
+                    e.row.CODE_CATEGORIE_PAIEMENT,
+                    e.row.LIB_CATEGORIE_PAIEMENT,
+                  )
+                : noRightFunc()
+            }}>
             <CreateIcon
               fontSize='inherit'
               color='default'
@@ -162,11 +156,11 @@ function CategoriePaiement(props) {
           <IconButton
             aria-label='delete'
             size='small'
-            onClick={() =>{
-              DroitsUser.droits_supprimer == 1 ?
-               FuncSuppr(e.row.id)
-              : noRightFunc()
-            } }>
+            onClick={() => {
+              DroitsUser.droits_supprimer == 1
+                ? FuncSuppr(e.row.id)
+                : noRightFunc()
+            }}>
             <DeleteSweepIcon
               color='default'
               fontSize='inherit'
@@ -178,7 +172,7 @@ function CategoriePaiement(props) {
     },
   ]
 
-
+  // console.log(useGet(`/categorie_paiement.php?type=R`))
   // recuperation des codes budgetaires
   useEffect(() => {
     setLoader(true)
@@ -186,19 +180,15 @@ function CategoriePaiement(props) {
       .then((response) => response.json())
       .then((data) => {
         setListCategoriePaiement(data.infos)
-        
       })
     setLoader(false)
-}, [])
-
-
-
+  }, [])
 
   /////////////// Ouverture du modal des codes budgetaires
   const handleClickOpenCategoriePaiement = (
     id = 0,
     code_categorie_paiement = '',
-    lib_categorie_paiement = '', 
+    lib_categorie_paiement = '',
   ) => {
     setInit({
       id: id,
@@ -219,21 +209,20 @@ function CategoriePaiement(props) {
   const DroitsUser = leMenu.group['Eléments paiements'][4]
 
   // fonction pas assez de droits
-  const noRightFunc = () =>{
+  const noRightFunc = () => {
     setNotify({
       type: 'error',
-      message: "Droits insuffisants",
+      message: 'Droits insuffisants',
     })
-    
+
     setOpenNotif(true)
   }
 
   const classes = useStyles()
 
-//console.log(DroitsUser)
+  //console.log(DroitsUser)
 
   return (
-    
     <>
       <PageHeader icone={props.icone} titrePage={props.titre} />
 
@@ -245,15 +234,14 @@ function CategoriePaiement(props) {
               color='primary'
               size='small'
               onClick={() => {
-                DroitsUser.droits_creer == 1 ?
-                handleClickOpenCategoriePaiement()
-                : noRightFunc()
-              } }
+                DroitsUser.droits_creer == 1
+                  ? handleClickOpenCategoriePaiement()
+                  : noRightFunc()
+              }}
               className={classes.button}
               startIcon={<AddIcon />}>
               Créer
             </Buttons>
-            
           </>
         }
       />
@@ -272,7 +260,6 @@ function CategoriePaiement(props) {
               onRowClick={(e) => {}}
               pagination
             />
-
           </Grid>{' '}
           <CategoriePaiementForm
             setListCategoriePaiement={setListCategoriePaiement}
@@ -286,7 +273,6 @@ function CategoriePaiement(props) {
             }
             infoCookie={props.infoCookie}
           />
-
         </Grid>
       )}
 
@@ -294,7 +280,7 @@ function CategoriePaiement(props) {
         open={opens_}
         onClose={handleCloseModal_}
         titre='Supprimer?'
-        message={'Voulez vous Supprimer cet Categorie Paiement ?' }
+        message={'Voulez vous Supprimer cet Categorie Paiement ?'}
         non='Annuler'
         oui='Oui'
         deconnect={() => StopCnx(idProf)}
@@ -306,7 +292,6 @@ function CategoriePaiement(props) {
         open={openNotif}
         setOpen={setOpenNotif}
       />
-
     </>
   )
 }

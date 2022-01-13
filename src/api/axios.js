@@ -3,7 +3,7 @@
 import axios from 'axios'
 
 const instance = axios.create({
-  baseURL: 'http://WIN-E9496CJUVAT:8099/api_treso_app/sources/',
+  baseURL: 'http://localhost:8080/api_treso_app/sources/',
 })
 
 export default instance
