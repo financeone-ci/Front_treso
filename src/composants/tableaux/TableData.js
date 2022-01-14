@@ -1,39 +1,14 @@
 /** @format */
 
 import React, { useState } from 'react'
-import { frFR, XGrid } from '@material-ui/x-grid'
+import { DataGrid } from '@material-ui/data-grid'
+// import { frFR, XGrid } from '@material-ui/x-grid'
 import { createMuiTheme } from '@material-ui/core/styles'
 import { makeStyles } from '@material-ui/styles'
 import { useQuery } from 'react-query'
 import axios from '../../api/axios'
 import { Paper } from '@material-ui/core'
 import Controls from '../../composants/controls/Controls'
-
-// const defaultTheme = createMuiTheme()
-// const useStyles = makeStyles(
-//   (theme) => ({
-//     root: {
-//       padding: theme.spacing(0.5, 0.5, 0),
-//       justifyContent: 'space-between',
-//       display: 'flex',
-//       alignItems: 'flex-start',
-//       flexWrap: 'wrap',
-//     },
-//     textField: {
-//       [theme.breakpoints.down('xs')]: {
-//         width: '100%',
-//       },
-//       margin: theme.spacing(1, 0.5, 1.5),
-//       '& .MuiSvgIcon-root': {
-//         marginRight: theme.spacing(0.5),
-//       },
-//       '& .MuiInput-underline:before': {
-//         borderBottom: `1px solid ${theme.palette.divider}`,
-//       },
-//     },
-//   }),
-//   { defaultTheme },
-// )
 
 function TableData(props) {
   const [dataTable, setDataTable] = useState([])
@@ -55,6 +30,7 @@ function TableData(props) {
     },
   })
 
+  console.log('ooooooooo')
   return (
     <>
       {VueData.isLoading ? (
@@ -65,11 +41,11 @@ function TableData(props) {
         <div style={{ height: 550, width: '100%', cursor: 'pointer' }}>
           <div style={{ display: 'flex', height: '100%' }}>
             <div style={{ flexGrow: 1 }}>
-              <XGrid
-                localeText={frFR.props.MuiDataGrid.localeText}
-                density='compact'
+              <DataGrid
+                // localeText={frFR.props.MuiDataGrid.localeText}
                 rows={dataTable}
                 columns={tableColumns}
+                density='compact'
                 rowHeight={40}
                 pageSize={12}
                 {...props}

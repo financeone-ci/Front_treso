@@ -21,14 +21,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-
-
 function UtilisateursForm(props) {
-
   ////////////////// redux
-  const myCookie =useSelector(state => state.cookie  )
-  //console.log(myCookie)
-
+  const myCookie = useSelector((state) => state.cookie)
 
   const [notify, setNotify] = useState({
     type: '',
@@ -97,7 +92,6 @@ function UtilisateursForm(props) {
     axios
       .post('banque.php?type=C&jeton=' + props.infoCookie, values)
       .then((response) => {
-        
         if (response.data.reponse == 'success') {
           try {
             setNotify({
@@ -105,7 +99,7 @@ function UtilisateursForm(props) {
               message: response.data.message,
             })
             if (typeSubmit.type == 1) {
-               props.handleClose()
+              props.handleClose()
             }
             setOpenNotif(true)
             fetch(Constantes.URL + '/banque.php?type=R&read_all')
