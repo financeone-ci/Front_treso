@@ -308,27 +308,23 @@ function IntEngagements(props) {
     ])
   }
 
-  const onSubmitFileForm = (values, onSubmitProps) => {
-    
-    
-  }
+  const onSubmitFileForm = (values, onSubmitProps) => {}
 
   const classes = useStyles()
 
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight)
   const [profileImg, setProfileImg] = useState()
-  
- 
-  const   handleFileRead = async (event) => {
+
+  const handleFileRead = async (event) => {
     const file = event.target.files[0]
     const base64 = await this.convertBase64(file)
     console.log(base64)
   }
 
-    ////////////// Droits de l'utilisateur
+  ////////////// Droits de l'utilisateur
   var MachaineDeCrypte = CryptFunc(localStorage.getItem('_Drt'), 0)
   const leMenu = GroupBy(MachaineDeCrypte)
-  const DroitsUser = leMenu.group['Engagements '][0]
+  const DroitsUser = leMenu.group['Intégrations'][0]
 
   // fonction pas assez de droits
   const noRightFunc = () => {
@@ -339,30 +335,23 @@ function IntEngagements(props) {
     setOpenNotif(true)
   }
 
-
-
   useEffect(() => {
     fetch(Constantes.URL + '/strucImport.php?type=R')
       .then((response) => response.json())
       .then((data) => setlistStructure(data.infos))
   }, [])
   return (
-    <>  
-     <PageHeader icone={props.icone} titrePage={props.titre} />
-    
-<Grid container spacing={3}>
-       
-   
+    <>
+      <PageHeader icone={props.icone} titrePage={props.titre} />
 
-
+      <Grid container spacing={3}>
         {/* Chart */}
-        
+
         {/* Recent Deposits */}
-        
+
         {/* Recent Orders */}
-        <Grid item xs={12} md={4} lg={3} style={{display:'none'}} >
-          
-        <Paper className={classes.paper}>
+        <Grid item xs={12} md={4} lg={3} style={{ display: 'none' }}>
+          <Paper className={classes.paper}>
             <table>
               {enteteCol.map(
                 (item) =>
@@ -375,7 +364,7 @@ function IntEngagements(props) {
                           {item.headerName}
                         </td>
                         <td style={{ border: 'solid 1px blue', color: 'grey' }}>
-                          {infosStructure[0][item.field]} 
+                          {infosStructure[0][item.field]}
                         </td>
                       </tr>
                     </>
@@ -384,16 +373,17 @@ function IntEngagements(props) {
             </table>
           </Paper>
         </Grid>
-        
+
         <Grid item xs={12} md={12} lg={12}>
-          
           <Paper className={classes.paper}>
-          {
-          DroitsUser.droits_creer == 1
-            ?  <TableauExcel infosStructure={infosStructure} infoCookie={props.infoCookie}  />
-            : noRightFunc()
-        }
-                    
+            {DroitsUser.droits_creer == 1 ? (
+              <TableauExcel
+                infosStructure={infosStructure}
+                infoCookie={props.infoCookie}
+              />
+            ) : (
+              noRightFunc()
+            )}
           </Paper>
         </Grid>
       </Grid>
