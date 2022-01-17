@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import PageHeader from '../../../composants/PageHeader'
 import TableData from '../../../composants/tableaux/TableData'
+// import TableauBasic from '../../../composants/tableaux/TableauBasic'
 import { Paper, Grid, FormControlLabel, Checkbox } from '@material-ui/core'
 import Controls from '../../../composants/controls/Controls'
 import BarreButtons from '../../../composants/BarreButtons'
@@ -58,10 +59,10 @@ function VueSites(props) {
   const [checkedG, setCheckedG] = useState(false)
   const [idem, setIdem] = useState(false)
   const [statevuePaiements, setStatevuePaiements] = useState([])
-
-  // Récupérer le cookie
-  const cookieInfo = ReadCookie()
+  const [dataTable, setDataTable] = useState([])
   const Api = 'sites/ReadSite.php'
+  const Query = ['listesite']
+  const cookieInfo = ReadCookie()
 
   // Fermeture du modal
   const handleCloseModal = () => {
@@ -172,13 +173,10 @@ function VueSites(props) {
       <Grid container>
         <Grid item xs={12}>
           <TableData
-            disableSelectionOnClick={true}
             columns={tableHeader}
+            useQuery={Query}
             api={Api}
-            Authorization={cookieInfo}
-            useQuery={['vuedata']}
-            pagination
-            pageSize={150}
+            Authorization={ReadCookie()}
           />
         </Grid>
       </Grid>

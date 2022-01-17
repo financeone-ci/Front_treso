@@ -1,8 +1,8 @@
 /** @format */
 
 import React, { useState } from 'react'
-import { DataGrid } from '@material-ui/data-grid'
-// import { frFR, XGrid } from '@material-ui/x-grid'
+// import { DataGrid } from '@material-ui/data-grid'
+import { frFR, XGrid } from '@material-ui/x-grid'
 import { createMuiTheme } from '@material-ui/core/styles'
 import { makeStyles } from '@material-ui/styles'
 import { useQuery } from 'react-query'
@@ -25,12 +25,14 @@ function TableData(props) {
   }
 
   const VueData = useQuery(props.useQuery, fetchData, {
-    onSuccess: (data) => {
-      setDataTable(data.data.infos)
-    },
+    // cacheTime: 5 * 60 * 1000,
+    // staleTime: 5 * 60 * 1000,
+    // onSuccess: (data) => {
+    //   setDataTable(data.data.infos)
+    // },
   })
 
-  console.log('ooooooooo')
+  // console.log(VueData.data.data.infos)
   return (
     <>
       {VueData.isLoading ? (
@@ -41,9 +43,9 @@ function TableData(props) {
         <div style={{ height: 550, width: '100%', cursor: 'pointer' }}>
           <div style={{ display: 'flex', height: '100%' }}>
             <div style={{ flexGrow: 1 }}>
-              <DataGrid
-                // localeText={frFR.props.MuiDataGrid.localeText}
-                rows={dataTable}
+              <XGrid
+                localeText={frFR.props.MuiDataGrid.localeText}
+                rows={VueData.data.data.infos}
                 columns={tableColumns}
                 density='compact'
                 rowHeight={40}
