@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import * as yup from 'yup'
 import axios from '../../api/axios'
 import ModalForm from '../../composants/controls/modal/ModalForm'
@@ -46,17 +46,17 @@ function RetraitForm(props) {
     const headers = {
       Authorization: props.infoCookie,
     }
-    const response = await axios
-      .post(`CreateRetrait.php?id=${props.listID}`, formData, { headers })
-      .then((response) => {
-        donnee = response.data
-      })
-    return donnee
+    let response = await axios.post(
+      `CreateRetrait.php?id=${props.listID}`,
+      formData,
+      { headers },
+    )
+    return response.data
   }
 
   const mutationEdit = useMutation(editRetraitFunc, {
-    onError: (data) => {
-      setNotify({ message: data.message, type: 'error' })
+    onError: () => {
+      setNotify({ message: 'Connexion impossible', type: 'error' })
       setOpenNotif(true)
     },
     onSuccess: (data) => {

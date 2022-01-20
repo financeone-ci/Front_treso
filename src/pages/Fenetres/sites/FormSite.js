@@ -1,16 +1,20 @@
 /** @format */
 
-import React from 'react'
+import React, { useState } from 'react'
 import * as yup from 'yup'
 import axios from '../../../api/axios'
 import ModalForm from '../../../composants/controls/modal/ModalForm'
 import Controls from '../../../composants/controls/Controls'
 import { makeStyles } from '@material-ui/core'
 import { Notification } from '../../../composants/controls/toast/MyToast'
-import Constantes from '../../../api/Constantes'
 import { Formik, Form, Field, useField, ErrorMessage } from 'formik'
 import { Grid } from '@material-ui/core'
-import { useSelector } from 'react-redux'
+import {
+  useIsMutating,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from 'react-query'
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -22,28 +26,63 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-function FormSite() {
+function FormSite(props) {
+  // Stats
+  const [notify, setNotify] = useState({
+    type: '',
+    message: '',
+  })
+  const [openNotif, setOpenNotif] = useState(false)
+
+  // Variables
+
+  // Schema formik
+  const schema = yup.object().shape({
+    code: yup.string().required('Code obligatoire'),
+    description: yup.string().required('Description obligatoire'),
+    representant: yup.string().required('Représentant obligatoire'),
+    description: yup.string().required('Description obligatoire'),
+    description: yup.string().required('Description obligatoire'),
+  })
+
+  const submitForm = async (values, type) => {
+    let Api = ''
+    type === 1 ? (Api = 'sites/CreateSite.php') : (Api = 'sites/UpdateSite.php')
+    let response = await axios.post(Api, { values })
+    return response.data
+  }
+
+  // Création d'un site
+  const CreateSite = useMutation(submitForm, {
+    onSuccess: (data) => {},
+    onError: () => {},
+  })
+
+  // Modification d'un site
+  const UpdateSite = useMutation(submitForm, {
+    onSuccess: (data) => {},
+    onError: () => {},
+  })
+
+  const classes = useStyles()
   return (
     <>
       <ModalForm
         title={props.titreModal}
         handleClose={props.handleClose}
-        open={props.open}>
+        open={props.openModal}>
         <Formik
           noValidate
           initialValues={{
-            id: props.initial_.id,
-            code: props.initial_.code,
-            libelle: props.initial_.libelle,
-            directeur: props.initial_.dg,
-            gestionnaire: props.initial_.gestionnaire,
-            adresse_web: props.initial_.adresse_web,
-            adresse: props.initial_.adresse,
-            contact: props.initial_.contact,
+            id: props.initialModal.id,
+            code: props.initialModal.code,
+            description: props.initialModal.description,
+            representant: props.initialModal.representant,
+            local: props.initialModal.local,
           }}
           validationSchema={schema}
           onSubmit={(values, onSubmitProps) => {
-            onSubmitBankForm(values, onSubmitProps)
+            // onSubmitBankForm(values, onSubmitProps)
           }}>
           {({
             values,
@@ -60,7 +99,7 @@ function FormSite() {
                 id='id'
                 name='id'
                 type='hidden'
-                value={props.initial_.id || ''}
+                value={props.initialModal.id || ''}
               />
               <Grid container spacing={2}>
                 <Grid item xs={6} sm={6} lg={6}>
@@ -80,13 +119,15 @@ function FormSite() {
                     variant='outlined'
                     margin='normal'
                     fullWidth
-                    id='desciption'
+                    id='description'
                     label='Description'
                     type='text'
-                    thelperText={errors.desciption}
-                    terror={errors.desciption && true}
-                    name='desciption'
+                    thelperText={errors.description}
+                    terror={errors.description && true}
+                    name='description'
                   />
+                </Grid>
+                <Grid item xs={6} sm={6} lg={6}>
                   <Controls.TextInput
                     variant='outlined'
                     margin='normal'
@@ -98,67 +139,32 @@ function FormSite() {
                     terror={errors.representant && true}
                     name='representant'
                   />
-
                   <Controls.TextInput
                     variant='outlined'
                     margin='normal'
                     fullWidth
-                    id='localisation'
-                    label='Adresse géographique'
+                    id='local'
+                    label='Localisation'
                     type='text'
-                    thelperText={errors.localisation}
-                    terror={errors.localisation && true}
-                    name='localisation'
+                    thelperText={errors.local}
+                    terror={errors.local && true}
+                    name='local'
                   />
                 </Grid>
-                <Grid item xs={6} sm={6} lg={6}>
-                  <Controls.TextInput
-                    variant='outlined'
-                    margin='normal'
-                    fullWidth
-                    id='contact'
-                    label='Contact banque'
-                    type='text'
-                    thelperText={errors.contact}
-                    terror={errors.contact && true}
-                    name='contact'
-                  />
-                  <Controls.TextInput
-                    variant='outlined'
-                    margin='normal'
-                    fullWidth
-                    id='adresse_web'
-                    label='Adresse web'
-                    type='url'
-                    thelperText={errors.adresse_web}
-                    terror={errors.adresse_web && true}
-                    name='adresse_web'
-                  />
-
-                  <Controls.TextInput
-                    variant='outlined'
-                    margin='normal'
-                    fullWidth
-                    id='adresse'
-                    label='Adresse'
-                    type='text'
-                    thelperText={errors.adresse}
-                    terror={errors.adresse && true}
-                    name='adresse'
-                  />
-                </Grid>{' '}
               </Grid>
 
               <div className={classes.buton}>
                 <Controls.ButtonLabel
                   color='primary'
-                  onClick={() => setTypeSubmit({ type: 1 })}>
+                  //onClick={}
+                >
                   Valider
                 </Controls.ButtonLabel>
-                {props.initial_.id == 0 && (
+                {props.initialModal.id == 0 && (
                   <Controls.ButtonLabel
                     color='secondary'
-                    onClick={() => setTypeSubmit({ type: 2 })}>
+                    // onClick={}
+                  >
                     Appliquer
                   </Controls.ButtonLabel>
                 )}

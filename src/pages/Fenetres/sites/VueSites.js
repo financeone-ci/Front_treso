@@ -13,6 +13,7 @@ import CreateIcon from '@material-ui/icons/Create'
 import IconButton from '@material-ui/core/IconButton'
 import ModalOuiNon from '../../../composants/controls/modal/ModalOuiNon'
 import axios from '../../../api/axios'
+import FormSite from './FormSite'
 import AddIcon from '@material-ui/icons/Add'
 import { Notification } from '../../../composants/controls/toast/MyToast'
 import CryptFunc from '../../../functions/CryptFunc'
@@ -34,7 +35,7 @@ function VueSites(props) {
   ////////////// Droits de l'utilisateur
   var MachaineDeCrypte = CryptFunc(localStorage.getItem('_Drt'), 0)
   const leMenu = GroupBy(MachaineDeCrypte)
-  const DroitsUser = leMenu.group['Entités'][4]
+  const DroitsUser = leMenu.group['Entités'][3]
   // droits insuffisants
   const noRightFunc = () => {
     setNotify({
@@ -45,21 +46,16 @@ function VueSites(props) {
   }
 
   // Stats
-  const [initialModal, setInitialModal] = useState({
-    beneficiaire: '',
-    identite: '',
-  })
+  const [initialModal, setInitialModal] = useState({})
   const [notify, setNotify] = useState({
     type: '',
     message: '',
   })
   const [openNotif, setOpenNotif] = useState(false)
   const [openModal, setOpenModal] = useState(false) // statut du modal suppression
-  const [listId, setListId] = useState('') // idprofil à editer ou supprimer?
-  const [checkedG, setCheckedG] = useState(false)
-  const [idem, setIdem] = useState(false)
   const [statevuePaiements, setStatevuePaiements] = useState([])
-  const [dataTable, setDataTable] = useState([])
+
+  // Variables
   const Api = 'sites/ReadSite.php'
   const Query = ['listesite']
   const cookieInfo = ReadCookie()
@@ -67,6 +63,34 @@ function VueSites(props) {
   // Fermeture du modal
   const handleCloseModal = () => {
     setOpenModal(false)
+  }
+  // ouverture du modal
+  const handleOpenModal = () => {
+    setInitialModal({
+      id: '',
+      code: '',
+      description: '',
+      representant: '',
+      local: '',
+    })
+    setOpenModal(true)
+  }
+
+  // Modifier le site
+  const handleUpdateSite = (item) => {
+    setInitialModal({
+      id: item.id,
+      code: item.CODE_SITE,
+      description: item.DESCRIPTION_SITE,
+      representant: item.REPRESENTANT_SITE,
+      local: item.LOCALISATION_SITE,
+    })
+    setOpenModal(true)
+  }
+
+  // Changer le titre
+  const swicthTitle = () => {
+    return 'Nouveau site'
   }
 
   // Mise à jour de la liste des retraits après mutation
@@ -132,7 +156,7 @@ function VueSites(props) {
             aria-label='update'
             size='small'
             onClick={() => {
-              // handleClickOpenMesure(e.row.id)
+              handleUpdateSite(e.row)
             }}>
             <CreateIcon
               fontSize='inherit'
@@ -159,12 +183,10 @@ function VueSites(props) {
               color='primary'
               size='small'
               onClick={() => {
-                // DroitsUser.droits_creer == 1 ? handleOpenModal() : noRightFunc()
+                DroitsUser.droits_creer == 1 ? handleOpenModal() : noRightFunc()
               }}
               className={classes.button}
-              startIcon={<AddIcon />}
-              //   disabled={listId.length > 0 && idem === true ? false : true}
-            >
+              startIcon={<AddIcon />}>
               Créer
             </Buttons>
           </>
@@ -180,15 +202,12 @@ function VueSites(props) {
           />
         </Grid>
       </Grid>
-      {/* <RetraitForm
+      <FormSite
         openModal={openModal}
         handleClose={handleCloseModal}
         initialModal={initialModal}
-        queryClient={queryClient}
-        listID={listId}
-        infoCookie={props.infoCookie}
-        files={statevuePaiements}
-      /> */}
+        titreModal={swicthTitle()}
+      />
       <Notification
         type={notify.type}
         message={notify.message}
