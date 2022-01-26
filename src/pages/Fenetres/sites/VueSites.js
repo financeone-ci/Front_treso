@@ -53,7 +53,7 @@ function VueSites(props) {
   })
   const [openNotif, setOpenNotif] = useState(false)
   const [openModal, setOpenModal] = useState(false) // statut du modal suppression
-  const [statevuePaiements, setStatevuePaiements] = useState([])
+  const [title, setTitle] = useState('')
 
   // Variables
   const Api = 'sites/ReadSite.php'
@@ -64,33 +64,25 @@ function VueSites(props) {
   const handleCloseModal = () => {
     setOpenModal(false)
   }
+
   // ouverture du modal
-  const handleOpenModal = () => {
+  const handleOpenModal = (
+    id = '',
+    code = '',
+    description = '',
+    representant = '',
+    local = '',
+  ) => {
     setInitialModal({
-      id: '',
-      code: '',
-      description: '',
-      representant: '',
-      local: '',
+      id: id,
+      code: code,
+      description: description,
+      representant: representant,
+      local: local,
     })
+    //Mise à jour du titre
+    id === '' ? setTitle('Nouveau site') : setTitle(`Modifier ${code}`)
     setOpenModal(true)
-  }
-
-  // Modifier le site
-  const handleUpdateSite = (item) => {
-    setInitialModal({
-      id: item.id,
-      code: item.CODE_SITE,
-      description: item.DESCRIPTION_SITE,
-      representant: item.REPRESENTANT_SITE,
-      local: item.LOCALISATION_SITE,
-    })
-    setOpenModal(true)
-  }
-
-  // Changer le titre
-  const swicthTitle = () => {
-    return 'Nouveau site'
   }
 
   // Mise à jour de la liste des retraits après mutation
@@ -139,14 +131,6 @@ function VueSites(props) {
       columnResizeIcon: true,
     },
     {
-      field: 'CODE_SOCIETE',
-      hide: false,
-      editable: false,
-      headerName: 'Sociéte',
-      width: 150,
-      columnResizeIcon: true,
-    },
-    {
       field: 'Actions',
       width: 125,
       align: 'center',
@@ -156,7 +140,14 @@ function VueSites(props) {
             aria-label='update'
             size='small'
             onClick={() => {
-              handleUpdateSite(e.row)
+              handleOpenModal(
+                e.row.id,
+                e.row.CODE_SITE,
+                e.row.DESCRIPTION_SITE,
+                e.row.REPRESENTANT_SITE,
+                e.row.LOCALISATION_SITE,
+                1,
+              )
             }}>
             <CreateIcon
               fontSize='inherit'
@@ -206,7 +197,10 @@ function VueSites(props) {
         openModal={openModal}
         handleClose={handleCloseModal}
         initialModal={initialModal}
-        titreModal={swicthTitle()}
+        titreModal={title}
+        queryClient={queryClient}
+        setNotify={setNotify}
+        setOpenNotif={setOpenNotif}
       />
       <Notification
         type={notify.type}

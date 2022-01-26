@@ -103,8 +103,11 @@ function SaisieEngagementForm(props) {
   }
 
   const mutationEdit = useMutation(editEngagement, {
-    onError: (data) => {
-      setNotify({ message: data.message, type: data.reponse })
+    onError: () => {
+      setNotify({
+        message: 'Connexion au service impossible',
+        type: 'error',
+      })
       setOpenNotif(true)
     },
     onSuccess: (data) => {

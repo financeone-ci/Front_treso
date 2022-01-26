@@ -11,7 +11,6 @@ import { Paper } from '@material-ui/core'
 import Controls from '../../composants/controls/Controls'
 
 function TableData(props) {
-  const [dataTable, setDataTable] = useState([])
   const [tableColumns, setTableColumns] = useState(props.columns)
   // Chargement des données
   const fetchData = async () => {
@@ -48,8 +47,8 @@ function TableData(props) {
                 rows={VueData.data.data.infos}
                 columns={tableColumns}
                 density='compact'
-                rowHeight={40}
-                pageSize={12}
+                rowHeight={30}
+                pagination={true}
                 {...props}
               />
             </div>

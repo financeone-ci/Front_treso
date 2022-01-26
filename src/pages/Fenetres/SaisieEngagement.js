@@ -21,7 +21,6 @@ import GroupBy from '../../functions/GroupBy'
 import SearchIcon from '@material-ui/icons/Search'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
-import { ReactQueryDevtools } from 'react-query/devtools'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 const useStyles = makeStyles((theme) => ({
@@ -542,7 +541,7 @@ function SaisieEngagement(props) {
                 onRowClick={(e) => {}}
                 checkboxSelection={true}
                 pagination
-                pageSize={150}
+                pageSize={50}
               />
             </Grid>
           </Grid>

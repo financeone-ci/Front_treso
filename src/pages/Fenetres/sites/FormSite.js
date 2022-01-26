@@ -5,10 +5,12 @@ import * as yup from 'yup'
 import axios from '../../../api/axios'
 import ModalForm from '../../../composants/controls/modal/ModalForm'
 import Controls from '../../../composants/controls/Controls'
+import ReadCookie from '../../../functions/ReadCookie'
 import { makeStyles } from '@material-ui/core'
 import { Notification } from '../../../composants/controls/toast/MyToast'
 import { Formik, Form, Field, useField, ErrorMessage } from 'formik'
 import { Grid } from '@material-ui/core'
+import SpinnerForm from '../../../composants/controls/spinner/SpinnerForm'
 import {
   useIsMutating,
   useMutation,
@@ -28,42 +30,69 @@ const useStyles = makeStyles((theme) => ({
 
 function FormSite(props) {
   // Stats
-  const [notify, setNotify] = useState({
-    type: '',
-    message: '',
-  })
-  const [openNotif, setOpenNotif] = useState(false)
+  // const [notify, setNotify] = useState({
+  //   type: '',
+  //   message: '',
+  // })
+  // const [openNotif, setOpenNotif] = useState(false)
+  const [typeSubmit, setTypeSubmit] = useState(1)
+  const [listId, setListId] = useState('')
 
   // Variables
+  // lire les infos du cookie
+  const cookieInfo = ReadCookie()
 
-  // Schema formik
+  // Schema de validation du formulaire
   const schema = yup.object().shape({
     code: yup.string().required('Code obligatoire'),
     description: yup.string().required('Description obligatoire'),
     representant: yup.string().required('Représentant obligatoire'),
-    description: yup.string().required('Description obligatoire'),
-    description: yup.string().required('Description obligatoire'),
+    local: yup.string().required('Localisation obligatoire'),
   })
 
-  const submitForm = async (values, type) => {
-    let Api = ''
-    type === 1 ? (Api = 'sites/CreateSite.php') : (Api = 'sites/UpdateSite.php')
-    let response = await axios.post(Api, { values })
+  // Création d'un nouveau site
+  const submitSite = async (values) => {
+    let response = ''
+    const headers = {
+      Authorization: cookieInfo,
+    }
+    if (values.id === '') {
+      response = await axios.post(
+        'sites/CreateSite.php',
+        { values },
+        { headers },
+      )
+    } else {
+      response = await axios.post(
+        'sites/UpdateSite.php',
+        { values },
+        { headers },
+      )
+    }
+    typeSubmit == 1 && props.handleClose()
+
     return response.data
   }
 
   // Création d'un site
-  const CreateSite = useMutation(submitForm, {
-    onSuccess: (data) => {},
-    onError: () => {},
+  const site = useMutation(submitSite, {
+    onSuccess: (data) => {
+      props.queryClient.invalidateQueries('listesite')
+      props.setNotify({
+        type: data.reponse,
+        message: data.message,
+      })
+      props.setOpenNotif(true)
+    },
+    onError: () => {
+      props.setNotify({
+        message: 'Connexion au service impossible',
+        type: 'error',
+      })
+      props.setOpenNotif(true)
+    },
   })
-
-  // Modification d'un site
-  const UpdateSite = useMutation(submitForm, {
-    onSuccess: (data) => {},
-    onError: () => {},
-  })
-
+  console.log(site)
   const classes = useStyles()
   return (
     <>
@@ -71,6 +100,7 @@ function FormSite(props) {
         title={props.titreModal}
         handleClose={props.handleClose}
         open={props.openModal}>
+        {site.isLoading && <SpinnerForm />}
         <Formik
           noValidate
           initialValues={{
@@ -82,7 +112,24 @@ function FormSite(props) {
           }}
           validationSchema={schema}
           onSubmit={(values, onSubmitProps) => {
-            // onSubmitBankForm(values, onSubmitProps)
+            site.mutate(values, {
+              onSuccess: () => {
+                // console.log(site.data)
+                //  site.data.reponse == 'success' &&
+                onSubmitProps.resetForm({
+                  values: {
+                    id: '',
+                    code: '',
+                    description: '',
+                    representant: '',
+                    local: '',
+                  },
+                })
+              },
+              onError: (e) => {
+                console.log(e)
+              },
+            })
           }}>
           {({
             values,
@@ -156,15 +203,13 @@ function FormSite(props) {
               <div className={classes.buton}>
                 <Controls.ButtonLabel
                   color='primary'
-                  //onClick={}
-                >
+                  onClick={() => setTypeSubmit({ type: 1 })}>
                   Valider
                 </Controls.ButtonLabel>
-                {props.initialModal.id == 0 && (
+                {props.initialModal.id === '' && (
                   <Controls.ButtonLabel
                     color='secondary'
-                    // onClick={}
-                  >
+                    onClick={() => setTypeSubmit({ type: 2 })}>
                     Appliquer
                   </Controls.ButtonLabel>
                 )}
@@ -173,12 +218,6 @@ function FormSite(props) {
           )}
         </Formik>
       </ModalForm>
-      <Notification
-        type={notify.type}
-        message={notify.message}
-        open={openNotif}
-        setOpen={setOpenNotif}
-      />
     </>
   )
 }
