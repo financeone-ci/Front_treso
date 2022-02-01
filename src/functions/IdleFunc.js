@@ -35,7 +35,6 @@ const IdleFunc = () => {
       expires: new Date(2021, 1, 1),
       path: '/',
     })
-    fetch(Constantes.URL + '/auditCnx.php?type=C&deconnexion&user_id='+id+'&user_nom='+nom+'&raison=utilisateur_inactif')
     history.push('/')
   })
   useEffect(() => {

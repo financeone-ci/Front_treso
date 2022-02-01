@@ -1,13 +1,16 @@
 /** @format */
 
 import { Switch, Route } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import Constantes from '../../api/Constantes'
+
 import DashBoard from '../../pages/Fenetres/DashBoard'
 import MenuBanque from '../../pages/Fenetres/MenuBanque'
 import DefinePassword from '../../pages/Fenetres/DefinePassword'
 import MenuTresorerie from '../../pages/Fenetres/MenuTresorerie'
 import Administration from '../../pages/Fenetres/Administration'
 import Profils from '../../pages/Fenetres/Profils'
-import Devises from '../../pages/Fenetres/Devises'
+import Devises from '../../pages/Fenetres/devise/VueDevises'
 import Flux from '../../pages/Fenetres/Flux'
 import CodeBudgetaire from '../../pages/Fenetres/CodeBudgetaire'
 import CategoriePaiement from '../../pages/Fenetres/CategoriePaiement'
@@ -56,6 +59,7 @@ import AccountBalanceIcon from '@material-ui/icons/AccountBalance'
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline'
 
 function Chemins(props) {
+  const [listChemins, setListChemins] = useState([])
   const MenuCreator = (id) => {
     const menu_admin = []
     var MachaineDeCrypte = CryptFunc(localStorage.getItem('_Drt'), 0)
@@ -71,6 +75,10 @@ function Chemins(props) {
   return (
     <>
       <Switch>
+   
+     
+      
+    
         // Routes niveau 1
         <Route exact path='/accueil' component={DashBoard} />
         // Routes niveau 2
@@ -131,6 +139,8 @@ function Chemins(props) {
             />
           )}
         />
+
+
         // Routes niveau 3
         <Route
           path={'/accueil/administration/profils'}
@@ -201,6 +211,16 @@ function Chemins(props) {
             />
           )}
         />
+        {/* <Route
+          path={'/accueil/parametre/devise'}
+          render={() => (
+            <Devises
+              icone={<MonetizationOnIcon fontSize='large' />}
+              titre='Devises'
+              infoCookie={props.infoCookie}
+            />
+          )}
+        /> */}
         <Route
           path={'/accueil/parametre/societes'}
           render={() => (
