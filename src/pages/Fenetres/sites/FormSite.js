@@ -59,7 +59,7 @@ function FormSite(props) {
       )
     } else {
       response = await axios.post(
-        'sites/UpdateSite.php',
+        `sites/UpdateSite.php?id=${values.id}`,
         { values },
         { headers },
       )

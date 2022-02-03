@@ -89,7 +89,7 @@ function VueDevises(props) {
     id === '' ? setTitle('Nouvelle devise ') : setTitle(`Modifier ${code}`)
     setOpenModal(true)
   }
-  
+
   // Modal Supression
   const FuncSuppr = (id) => {
     setOpenOuiNon(true)
@@ -102,13 +102,13 @@ function VueDevises(props) {
     const headers = {
       Authorization: cookieInfo,
     }
-   
-      response = await axios.post(
-        'devises/DeleteDevise.php?id='+values,
-        { values },
-        { headers },
-      )
-      handleCloseModalOuiNon()
+
+    response = await axios.post(
+      `devises/DeleteDevise.php?id=${values}`,
+      { values },
+      { headers },
+    )
+    handleCloseModalOuiNon()
 
     return response.data
   }
@@ -117,22 +117,21 @@ function VueDevises(props) {
   const supDevise = useMutation(supprDevise, {
     onSuccess: (data) => {
       queryClient.invalidateQueries('listedevise')
-     setNotify({
+      setNotify({
         type: data.reponse,
         message: data.message,
       })
       setOpenNotif(true)
-     
     },
-    onError: () => {
+    onError: (error) => {
+      console.error(error)
       props.setNotify({
-        message: 'Connexion au service impossible',
+        message: 'Service indisponible',
         type: 'error',
       })
       props.setOpenNotif(true)
     },
   })
-
 
   // Mise à jour de la liste des retraits après mutation
   const queryClient = useQueryClient()
@@ -189,14 +188,16 @@ function VueDevises(props) {
             aria-label='update'
             size='small'
             onClick={() => {
-              handleOpenModal(
-                e.row.id,
-                e.row.CODE_DEVISE,
-                e.row.LIBELLE_DEVISE,
-                e.row.TAUX_DEVISE,
-                e.row.DEVISE_DE_BASE,
-                1,
-              )
+              if (DroitsUser.droits_modifier == 1) {
+                handleOpenModal(
+                  e.row.id,
+                  e.row.CODE_DEVISE,
+                  e.row.LIBELLE_DEVISE,
+                  e.row.TAUX_DEVISE,
+                  e.row.DEVISE_DE_BASE,
+                  1,
+                )
+              }
             }}>
             <CreateIcon
               fontSize='inherit'
@@ -272,15 +273,7 @@ function VueDevises(props) {
         message={'Voulez vous Supprimer cette devise ?'}
         non='Annuler'
         oui='Oui'
-        deconnect={() => supDevise.mutate(idSuppr, {
-          onSuccess: () => {
-            console.log(supDevise)
-          },
-          onError: (e) => {
-            console.log(e)
-            
-          },
-        })}
+        deconnect={() => supDevise.mutate(idSuppr)}
       />
       <Notification
         type={notify.type}

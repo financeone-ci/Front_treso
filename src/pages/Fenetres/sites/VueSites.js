@@ -25,6 +25,7 @@ import ListCptSite from './ListCptSite'
 import ListIcon from '@material-ui/icons/List'
 import MenuTable from '../../../composants/controls/MenuTable'
 import MenuItem from '@material-ui/core/MenuItem'
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep'
 
 // Style
 const useStyles = makeStyles((theme) => ({
@@ -59,13 +60,15 @@ function VueSites(props) {
   })
   const [openNotif, setOpenNotif] = useState(false)
   const [openModal, setOpenModal] = useState(false)
+  const [openOuiNon, setOpenOuiNon] = useState(false) // statut du modal suppression
   const [openUserModal, setOpenUserModal] = useState(false)
   const [openCpteModal, setOpenCpteModal] = useState(false)
   const [title, setTitle] = useState('')
   const [site, setSite] = useState()
   const [siteUser, setSiteUser] = useState([])
   const [siteCpte, setSiteCpte] = useState([])
-  const [checked, setChecked] = useState([])
+  const [checkedUser, setCheckedUser] = useState([])
+  const [checkedCpte, setCheckedCpte] = useState([])
 
   // Variables
   const Api = 'sites/ReadSite.php'
@@ -82,13 +85,55 @@ function VueSites(props) {
   const handleCloseCpteModal = () => {
     setOpenCpteModal(false)
   }
+  const handleCloseModalOuiNon = () => {
+    setOpenOuiNon(false)
+  }
 
-  // Chargement de la liste des users
-  const listeUser = async (site) => {
+  // Modal Supression
+  const FuncSuppr = (id) => {
+    setOpenOuiNon(true)
+    setSite(id)
+  }
+
+  // suppression d'une  devise
+  const supprSite = async (site) => {
+    let response = ''
     const headers = {
       Authorization: cookieInfo,
     }
-    checked.splice(0, checked.length)
+    response = await axios.get(`sites/DeleteSite.php?id=${site}`, { headers })
+    setOpenOuiNon(false)
+
+    return response.data
+  }
+
+  // suppression d'un site
+  const supSite = useMutation(supprSite, {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries('listesite')
+      setNotify({
+        type: data.reponse,
+        message: data.message,
+      })
+      setOpenNotif(true)
+    },
+    onError: (error) => {
+      console.error(error)
+      props.setNotify({
+        message: 'Service indisponible',
+        type: 'error',
+      })
+      props.setOpenNotif(true)
+    },
+  })
+
+  // Chargement de la liste des users
+  const listeUser = async (site, code) => {
+    const headers = {
+      Authorization: cookieInfo,
+    }
+    setTitle(code)
+    checkedUser.splice(0, checkedUser.length)
     setSite(site)
     await axios
       .get(`sites/UserSite.php?site=${site}`, {
@@ -97,7 +142,7 @@ function VueSites(props) {
       .then((response) => {
         setSiteUser(response.data.infos)
         response.data.infos.map(
-          (item) => item.site == 1 && checked.push(item.id),
+          (item) => item.site == 1 && checkedUser.push(item.id),
         )
         setOpenUserModal(true)
         if (response.data.reponse == 'error') {
@@ -118,11 +163,12 @@ function VueSites(props) {
   }
 
   // Chargement de la liste des comptes
-  const listeCompte = async (site) => {
+  const listeCompte = async (site, code) => {
     const headers = {
       Authorization: cookieInfo,
     }
-    checked.splice(0, checked.length)
+    setTitle(code)
+    checkedCpte.splice(0, checkedCpte.length)
     setSite(site)
     await axios
       .get(`sites/CompteSite.php?site=${site}`, {
@@ -131,7 +177,7 @@ function VueSites(props) {
       .then((response) => {
         setSiteCpte(response.data.infos)
         response.data.infos.map(
-          (item) => item.site == 1 && checked.push(item.id),
+          (item) => item.site == 1 && checkedCpte.push(item.id),
         )
         setOpenCpteModal(true)
         if (response.data.reponse == 'error') {
@@ -225,14 +271,16 @@ function VueSites(props) {
             aria-label='update'
             size='small'
             onClick={() => {
-              handleOpenModal(
-                e.row.id,
-                e.row.CODE_SITE,
-                e.row.DESCRIPTION_SITE,
-                e.row.REPRESENTANT_SITE,
-                e.row.LOCALISATION_SITE,
-                1,
-              )
+              if (DroitsUser.droits_modifier == 1) {
+                handleOpenModal(
+                  e.row.id,
+                  e.row.CODE_SITE,
+                  e.row.DESCRIPTION_SITE,
+                  e.row.REPRESENTANT_SITE,
+                  e.row.LOCALISATION_SITE,
+                  1,
+                )
+              }
             }}>
             <CreateIcon
               fontSize='inherit'
@@ -240,11 +288,25 @@ function VueSites(props) {
               className='CreateIcon'
             />
           </IconButton>
+          <IconButton
+            aria-label='delete'
+            size='small'
+            onClick={() => {
+              DroitsUser.droits_supprimer == 1
+                ? FuncSuppr(e.row.id)
+                : noRightFunc()
+            }}>
+            <DeleteSweepIcon
+              color='default'
+              fontSize='inherit'
+              className='DeleteSweepIcon'
+            />
+          </IconButton>
           <MenuTable icone={<ListIcon />}>
             <MenuItem
               onClick={() => {
                 if (DroitsUser.droits_modifier == 1) {
-                  listeUser(e.row.id)
+                  listeUser(e.row.id, e.row.CODE_SITE)
                 } else {
                   noRightFunc()
                 }
@@ -254,7 +316,7 @@ function VueSites(props) {
             <MenuItem
               onClick={() => {
                 if (DroitsUser.droits_modifier == 1) {
-                  listeCompte(e.row.id)
+                  listeCompte(e.row.id, e.row.CODE_SITE)
                 } else {
                   noRightFunc()
                 }
@@ -310,28 +372,37 @@ function VueSites(props) {
         setOpenNotif={setOpenNotif}
       />
       <ListUserSite
-        titreModal='Utilisateurs du site'
+        titreModal={`Utilisateurs du site ${title}`}
         handleClose={handleCloseUserModal}
         openModal={openUserModal}
         Authorization={cookieInfo}
         siteId={site}
-        checked={checked}
-        setChecked={setChecked}
+        checked={checkedUser}
+        setChecked={setCheckedUser}
         usersite={siteUser}
         setNotify={setNotify}
         setOpenNotif={setOpenNotif}
       />
       <ListCptSite
-        titreModal='Utilisateurs du site'
+        titreModal={`Comptes du site ${title}`}
         handleClose={handleCloseCpteModal}
         openModal={openCpteModal}
         Authorization={cookieInfo}
         siteId={site}
-        checked={checked}
-        setChecked={setChecked}
+        checked={checkedCpte}
+        setChecked={setCheckedCpte}
         cptesite={siteCpte}
         setNotify={setNotify}
         setOpenNotif={setOpenNotif}
+      />
+      <ModalOuiNon
+        open={openOuiNon}
+        onClose={handleCloseModalOuiNon}
+        titre='Supprimer?'
+        message={'Voulez vous Supprimer cette devise ?'}
+        non='Annuler'
+        oui='Oui'
+        deconnect={() => supSite.mutate(site)}
       />
       <Notification
         type={notify.type}

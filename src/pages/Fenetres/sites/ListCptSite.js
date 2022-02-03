@@ -94,9 +94,9 @@ function ListCptSite(props) {
             return (
               <ListItem key={item.id} button>
                 <ListItemAvatar>
-                  <Avatar alt={item.CODE_COMPTE} src={'/broken-image.jpg'} />
+                  <Avatar alt={item.LIBELLE_COMPTE} src={'/broken-image.jpg'} />
                 </ListItemAvatar>
-                <ListItemText id={labelId} primary={`${item.CODE_COMPTE}`} />
+                <ListItemText id={labelId} primary={`${item.LIBELLE_COMPTE}`} />
                 <ListItemSecondaryAction>
                   <Checkbox
                     edge='end'
