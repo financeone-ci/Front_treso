@@ -18,6 +18,8 @@ import { useCookies } from 'react-cookie'
 import { Formik, Form, Field, useField, ErrorMessage } from 'formik'
 import CryptFunc from '../functions/CryptFunc'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
+import Backdrop from '@material-ui/core/Backdrop'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 function Copyright() {
   return (
@@ -44,6 +46,10 @@ const useStyles = makeStyles((theme) => ({
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
 }))
 
 export default function LoginForm() {
@@ -52,7 +58,13 @@ export default function LoginForm() {
     message: '',
   })
   const [openNotif, setOpenNotif] = useState(false)
-
+  const [open, setOpen] = React.useState(false)
+  const handleClose = () => {
+    setOpen(false)
+  }
+  const handleToggle = () => {
+    setOpen(!open)
+  }
   // Cookie
   const [cookies, setCookie] = useCookies(['_Jst'])
 
@@ -88,10 +100,8 @@ export default function LoginForm() {
         setNotify({ message: data.message, type: data.reponse })
         setOpenNotif(true)
       }
-
       // cryptage
       var MachaineCrypte = CryptFunc(data.droit, 1)
-
       // enregistrement dans local storage
       localStorage.setItem('_Drt', MachaineCrypte)
     },
@@ -99,13 +109,23 @@ export default function LoginForm() {
       setNotify({ message: 'Connexion impossible', type: 'error' })
       setOpenNotif(true)
     },
+    onMutate: () => {
+      handleToggle()
+    },
   })
 
   const classes = useStyles()
 
   return (
     <>
-      {userCnx.isLoading && <Controls.SpinnerBase />}
+      {userCnx.isLoading && (
+        <Backdrop
+          className={classes.backdrop}
+          open={open}
+          onClick={handleClose}>
+          <CircularProgress color='inherit' />
+        </Backdrop>
+      )}
       <Avatar className={classes.avatar}>
         <LockOutlinedIcon />
       </Avatar>
