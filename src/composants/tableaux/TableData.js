@@ -1,10 +1,7 @@
 /** @format */
 
 import React, { useState } from 'react'
-// import { DataGrid } from '@material-ui/data-grid'
 import { frFR, XGrid } from '@material-ui/x-grid'
-import { createMuiTheme } from '@material-ui/core/styles'
-import { makeStyles } from '@material-ui/styles'
 import { useQuery } from 'react-query'
 import axios from '../../api/axios'
 import { Paper } from '@material-ui/core'
@@ -20,15 +17,12 @@ function TableData(props) {
     let response = await axios(props.api, {
       headers,
     })
-    return response
+    return response.data
   }
 
   const VueData = useQuery(props.useQuery, fetchData, {
-    cacheTime: 5 * 60 * 1000,
-    staleTime: 5 * 60 * 1000,
-    // onSuccess: (data) => {
-    //   setDataTable(data.data.infos)
-    // },
+    cacheTime: 1 * 60 * 1000,
+    staleTime: 1 * 60 * 1000,
   })
 
   // console.log(VueData.data.data.infos)
@@ -44,7 +38,7 @@ function TableData(props) {
             <div style={{ flexGrow: 1 }}>
               <XGrid
                 localeText={frFR.props.MuiDataGrid.localeText}
-                rows={VueData.data.data.infos}
+                rows={VueData.data.infos}
                 columns={tableColumns}
                 density='compact'
                 rowHeight={30}

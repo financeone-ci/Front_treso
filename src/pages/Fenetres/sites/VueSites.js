@@ -20,6 +20,12 @@ import CryptFunc from '../../../functions/CryptFunc'
 import GroupBy from '../../../functions/GroupBy'
 import ReadCookie from '../../../functions/ReadCookie'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
+import ListUserSite from './ListUserSite'
+import ListCptSite from './ListCptSite'
+import ListIcon from '@material-ui/icons/List'
+import MenuTable from '../../../composants/controls/MenuTable'
+import MenuItem from '@material-ui/core/MenuItem'
+
 // Style
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -52,8 +58,14 @@ function VueSites(props) {
     message: '',
   })
   const [openNotif, setOpenNotif] = useState(false)
-  const [openModal, setOpenModal] = useState(false) // statut du modal suppression
+  const [openModal, setOpenModal] = useState(false)
+  const [openUserModal, setOpenUserModal] = useState(false)
+  const [openCpteModal, setOpenCpteModal] = useState(false)
   const [title, setTitle] = useState('')
+  const [site, setSite] = useState()
+  const [siteUser, setSiteUser] = useState([])
+  const [siteCpte, setSiteCpte] = useState([])
+  const [checked, setChecked] = useState([])
 
   // Variables
   const Api = 'sites/ReadSite.php'
@@ -64,8 +76,81 @@ function VueSites(props) {
   const handleCloseModal = () => {
     setOpenModal(false)
   }
+  const handleCloseUserModal = () => {
+    setOpenUserModal(false)
+  }
+  const handleCloseCpteModal = () => {
+    setOpenCpteModal(false)
+  }
 
-  // ouverture du modal
+  // Chargement de la liste des users
+  const listeUser = async (site) => {
+    const headers = {
+      Authorization: cookieInfo,
+    }
+    checked.splice(0, checked.length)
+    setSite(site)
+    await axios
+      .get(`sites/UserSite.php?site=${site}`, {
+        headers,
+      })
+      .then((response) => {
+        setSiteUser(response.data.infos)
+        response.data.infos.map(
+          (item) => item.site == 1 && checked.push(item.id),
+        )
+        setOpenUserModal(true)
+        if (response.data.reponse == 'error') {
+          setNotify({
+            type: response.data.reponse,
+            message: response.data.message,
+          })
+          setOpenNotif(true)
+        }
+      })
+      .catch((error) => {
+        setNotify({
+          type: 'error',
+          message: `Service indisponible: ${error}`,
+        })
+        setOpenNotif(true)
+      })
+  }
+
+  // Chargement de la liste des comptes
+  const listeCompte = async (site) => {
+    const headers = {
+      Authorization: cookieInfo,
+    }
+    checked.splice(0, checked.length)
+    setSite(site)
+    await axios
+      .get(`sites/CompteSite.php?site=${site}`, {
+        headers,
+      })
+      .then((response) => {
+        setSiteCpte(response.data.infos)
+        response.data.infos.map(
+          (item) => item.site == 1 && checked.push(item.id),
+        )
+        setOpenCpteModal(true)
+        if (response.data.reponse == 'error') {
+          setNotify({
+            type: response.data.reponse,
+            message: response.data.message,
+          })
+          setOpenNotif(true)
+        }
+      })
+      .catch((error) => {
+        setNotify({
+          type: 'error',
+          message: `Service indisponible: ${error}`,
+        })
+        setOpenNotif(true)
+      })
+  }
+
   const handleOpenModal = (
     id = '',
     code = '',
@@ -111,7 +196,7 @@ function VueSites(props) {
       hide: false,
       editable: false,
       headerName: 'Description',
-      width: 250,
+      width: 350,
       columnResizeIcon: true,
     },
     {
@@ -127,7 +212,7 @@ function VueSites(props) {
       hide: false,
       editable: false,
       headerName: 'Adresse géographique',
-      width: 250,
+      width: 300,
       columnResizeIcon: true,
     },
     {
@@ -155,6 +240,28 @@ function VueSites(props) {
               className='CreateIcon'
             />
           </IconButton>
+          <MenuTable icone={<ListIcon />}>
+            <MenuItem
+              onClick={() => {
+                if (DroitsUser.droits_modifier == 1) {
+                  listeUser(e.row.id)
+                } else {
+                  noRightFunc()
+                }
+              }}>
+              Ajouter utilisateur
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                if (DroitsUser.droits_modifier == 1) {
+                  listeCompte(e.row.id)
+                } else {
+                  noRightFunc()
+                }
+              }}>
+              Ajouter compte
+            </MenuItem>
+          </MenuTable>
         </>
       ),
     },
@@ -189,7 +296,7 @@ function VueSites(props) {
             columns={tableHeader}
             useQuery={Query}
             api={Api}
-            Authorization={ReadCookie()}
+            Authorization={cookieInfo}
           />
         </Grid>
       </Grid>
@@ -199,6 +306,30 @@ function VueSites(props) {
         initialModal={initialModal}
         titreModal={title}
         queryClient={queryClient}
+        setNotify={setNotify}
+        setOpenNotif={setOpenNotif}
+      />
+      <ListUserSite
+        titreModal='Utilisateurs du site'
+        handleClose={handleCloseUserModal}
+        openModal={openUserModal}
+        Authorization={cookieInfo}
+        siteId={site}
+        checked={checked}
+        setChecked={setChecked}
+        usersite={siteUser}
+        setNotify={setNotify}
+        setOpenNotif={setOpenNotif}
+      />
+      <ListCptSite
+        titreModal='Utilisateurs du site'
+        handleClose={handleCloseCpteModal}
+        openModal={openCpteModal}
+        Authorization={cookieInfo}
+        siteId={site}
+        checked={checked}
+        setChecked={setChecked}
+        cptesite={siteCpte}
         setNotify={setNotify}
         setOpenNotif={setOpenNotif}
       />

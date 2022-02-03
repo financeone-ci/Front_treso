@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import * as yup from 'yup'
 import axios from '../../../api/axios'
 import ModalForm from '../../../composants/controls/modal/ModalForm'
@@ -30,13 +30,8 @@ const useStyles = makeStyles((theme) => ({
 
 function FormSite(props) {
   // Stats
-  // const [notify, setNotify] = useState({
-  //   type: '',
-  //   message: '',
-  // })
-  // const [openNotif, setOpenNotif] = useState(false)
   const [typeSubmit, setTypeSubmit] = useState(1)
-  const [listId, setListId] = useState('')
+  const [succes, setSucces] = useState(false)
 
   // Variables
   // lire les infos du cookie
@@ -69,7 +64,7 @@ function FormSite(props) {
         { headers },
       )
     }
-    typeSubmit == 1 && props.handleClose()
+    typeSubmit === 1 && props.handleClose()
 
     return response.data
   }
@@ -86,13 +81,13 @@ function FormSite(props) {
     },
     onError: () => {
       props.setNotify({
-        message: 'Connexion au service impossible',
+        message: 'Service indisponible',
         type: 'error',
       })
       props.setOpenNotif(true)
     },
   })
-  console.log(site)
+
   const classes = useStyles()
   return (
     <>
@@ -113,21 +108,8 @@ function FormSite(props) {
           validationSchema={schema}
           onSubmit={(values, onSubmitProps) => {
             site.mutate(values, {
-              onSuccess: () => {
-                // console.log(site.data)
-                //  site.data.reponse == 'success' &&
-                onSubmitProps.resetForm({
-                  values: {
-                    id: '',
-                    code: '',
-                    description: '',
-                    representant: '',
-                    local: '',
-                  },
-                })
-              },
-              onError: (e) => {
-                console.log(e)
+              onSuccess: (e) => {
+                e.reponse == 'success' && onSubmitProps.resetForm()
               },
             })
           }}>
@@ -203,13 +185,13 @@ function FormSite(props) {
               <div className={classes.buton}>
                 <Controls.ButtonLabel
                   color='primary'
-                  onClick={() => setTypeSubmit({ type: 1 })}>
+                  onClick={() => setTypeSubmit(1)}>
                   Valider
                 </Controls.ButtonLabel>
                 {props.initialModal.id === '' && (
                   <Controls.ButtonLabel
                     color='secondary'
-                    onClick={() => setTypeSubmit({ type: 2 })}>
+                    onClick={() => setTypeSubmit(2)}>
                     Appliquer
                   </Controls.ButtonLabel>
                 )}
