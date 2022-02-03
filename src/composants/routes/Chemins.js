@@ -11,7 +11,6 @@ import MenuTresorerie from '../../pages/Fenetres/MenuTresorerie'
 import Administration from '../../pages/Fenetres/Administration'
 import Profils from '../../pages/Fenetres/Profils'
 import Devises from '../../pages/Fenetres/devise/VueDevises'
-import Flux from '../../pages/Fenetres/Flux'
 import CodeBudgetaire from '../../pages/Fenetres/CodeBudgetaire'
 import CategoriePaiement from '../../pages/Fenetres/CategoriePaiement'
 import StrucImport from '../../pag../../pages/Fenetres/StrucImport'
@@ -55,6 +54,7 @@ import Cheques from '../../pages/Fenetres/Cheques'
 import Virements from '../../pages/Fenetres/Virements'
 import Traites from '../../pages/Fenetres/Traites'
 import VueRetrais from '../../pages/Fenetres/VueRetrais'
+import VueFlux from '../../pages/Fenetres/flux/VueFlux'
 import AccountBalanceIcon from '@material-ui/icons/AccountBalance'
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline'
 
@@ -207,20 +207,10 @@ function Chemins(props) {
             <Devises
               icone={<MonetizationOnIcon fontSize='large' />}
               titre='Devises'
-              infoCookie={props.infoCookie}
             />
           )}
         />
-        {/* <Route
-          path={'/accueil/parametre/devise'}
-          render={() => (
-            <Devises
-              icone={<MonetizationOnIcon fontSize='large' />}
-              titre='Devises'
-              infoCookie={props.infoCookie}
-            />
-          )}
-        /> */}
+        
         <Route
           path={'/accueil/parametre/societes'}
           render={() => (
@@ -254,13 +244,22 @@ function Chemins(props) {
         <Route
           path={'/accueil/parametre/flux'}
           render={() => (
+            <VueFlux
+              icone={<SyncAltIcon fontSize='large' />}
+              titre='Flux'
+            />
+          )}
+        />
+        {/* <Route
+          path={'/accueil/parametre/flux'}
+          render={() => (
             <Flux
               icone={<SyncAltIcon fontSize='large' />}
               titre='Flux'
               infoCookie={props.infoCookie}
             />
           )}
-        />
+        /> */}
         <Route
           path={'/accueil/parametre/code-budgetaire'}
           render={() => (
