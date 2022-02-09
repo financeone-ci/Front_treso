@@ -47,7 +47,6 @@ function FormDevise(props) {
     code: yup.string().required('Code obligatoire'),
     libelle: yup.string().required('Libellé obligatoire'),
     taux: yup.string().required('taux obligatoire'),
-   
   })
 
   // Création d'une nouvelle devise
@@ -64,11 +63,10 @@ function FormDevise(props) {
       )
     } else {
       response = await axios.post(
-        'devises/UpdateDevise.php?id='+values.id,
+        'devises/UpdateDevise.php?id=' + values.id,
         { values },
         { headers },
       )
-      console.log(response)
     }
     typeSubmit == 1 && props.handleClose()
 
@@ -84,7 +82,6 @@ function FormDevise(props) {
         message: data.message,
       })
       props.setOpenNotif(true)
-     
     },
     onError: () => {
       props.setNotify({
@@ -118,15 +115,15 @@ function FormDevise(props) {
               onSuccess: (e) => {
                 // console.log(e)
                 e.reponse == 'success' &&
-                onSubmitProps.resetForm({
-                  values: {
-                    id: '',
-                    code: '',
-                    libelle: '',
-                    taux: '',
-                    base_devise: '',
-                  },
-                })
+                  onSubmitProps.resetForm({
+                    values: {
+                      id: '',
+                      code: '',
+                      libelle: '',
+                      taux: '',
+                      base_devise: '',
+                    },
+                  })
               },
               onError: (e) => {
                 console.log(e)
@@ -199,7 +196,6 @@ function FormDevise(props) {
                     terror={errors.taux && true}
                     name='taux'
                   />
-                  
                 </Grid>
               </Grid>
 

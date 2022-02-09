@@ -22,7 +22,7 @@ import ReadCookie from '../../../functions/ReadCookie'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import ListUserSite from './ListUserSite'
 import ListCptSite from './ListCptSite'
-import ListIcon from '@material-ui/icons/List'
+import MoreVertIcon from '@material-ui/icons/MoreVert'
 import MenuTable from '../../../composants/controls/MenuTable'
 import MenuItem from '@material-ui/core/MenuItem'
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep'
@@ -302,8 +302,9 @@ function VueSites(props) {
               className='DeleteSweepIcon'
             />
           </IconButton>
-          <MenuTable icone={<ListIcon />}>
+          <MenuTable icone={<MoreVertIcon />}>
             <MenuItem
+              dense={true}
               onClick={() => {
                 if (DroitsUser.droits_modifier == 1) {
                   listeUser(e.row.id, e.row.CODE_SITE)
@@ -314,6 +315,7 @@ function VueSites(props) {
               Ajouter utilisateur
             </MenuItem>
             <MenuItem
+              dense={true}
               onClick={() => {
                 if (DroitsUser.droits_modifier == 1) {
                   listeCompte(e.row.id, e.row.CODE_SITE)

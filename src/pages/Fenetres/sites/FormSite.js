@@ -65,7 +65,6 @@ function FormSite(props) {
       )
     }
     typeSubmit === 1 && props.handleClose()
-
     return response.data
   }
 
