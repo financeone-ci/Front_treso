@@ -76,6 +76,7 @@ function FormDevise(props) {
   // Création d'une devise
   const devise = useMutation(submitDevise, {
     onSuccess: (data) => {
+      console.log(data)
       props.queryClient.invalidateQueries('listedevise')
       props.setNotify({
         type: data.reponse,
