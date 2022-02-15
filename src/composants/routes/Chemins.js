@@ -17,7 +17,7 @@ import StrucImport from '../../pag../../pages/Fenetres/StrucImport'
 import TypeTiers from '../../pages/Fenetres/TypeTiers'
 import Tiers from '../../pages/Fenetres/Tiers'
 import CompteTiers from '../../pages/Fenetres/CompteTiers'
-import Societe from '../../pages/Fenetres/Societe'
+import Societe from '../../pages/Fenetres/societe/Societe'
 import Utilisateurs from '../../pages/Fenetres/Utilisateurs'
 import Banque from '../../pages/Fenetres/Banque'
 import Compte from '../../pages/Fenetres/Compte'
@@ -75,10 +75,6 @@ function Chemins(props) {
   return (
     <>
       <Switch>
-   
-     
-      
-    
         // Routes niveau 1
         <Route exact path='/accueil' component={DashBoard} />
         // Routes niveau 2
@@ -139,8 +135,6 @@ function Chemins(props) {
             />
           )}
         />
-
-
         // Routes niveau 3
         <Route
           path={'/accueil/administration/profils'}
@@ -210,7 +204,6 @@ function Chemins(props) {
             />
           )}
         />
-        
         <Route
           path={'/accueil/parametre/societes'}
           render={() => (
@@ -244,10 +237,7 @@ function Chemins(props) {
         <Route
           path={'/accueil/parametre/flux'}
           render={() => (
-            <VueFlux
-              icone={<SyncAltIcon fontSize='large' />}
-              titre='Flux'
-            />
+            <VueFlux icone={<SyncAltIcon fontSize='large' />} titre='Flux' />
           )}
         />
         {/* <Route
