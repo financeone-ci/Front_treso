@@ -12,9 +12,9 @@ import Administration from '../../pages/Fenetres/Administration'
 import Profils from '../../pages/Fenetres/Profils'
 import Devises from '../../pages/Fenetres/devise/VueDevises'
 import CodeBudgetaire from '../../pages/Fenetres/CodeBudgetaire'
-import CategoriePaiement from '../../pages/Fenetres/CategoriePaiement'
+import CategoriePaiement from '../../pages/Fenetres/categorie-paiements/VueCategoriePaiements'
 import StrucImport from '../../pag../../pages/Fenetres/StrucImport'
-import TypeTiers from '../../pages/Fenetres/TypeTiers'
+import VueTypeTiers from '../../pages/Fenetres/type-tiers/VueTypeTiers'
 import Tiers from '../../pages/Fenetres/Tiers'
 import CompteTiers from '../../pages/Fenetres/CompteTiers'
 import Societe from '../../pages/Fenetres/societe/Societe'
@@ -270,10 +270,20 @@ function Chemins(props) {
             />
           )}
         />
+        {/* <Route
+          path={'/accueil/parametre/categorie-paiements'}
+          render={() => (
+            <CategoriePaiement
+              icone={<PaymentIcon fontSize='large' />}
+              titre='Categorie Paiement'
+              infoCookie={props.infoCookie}
+            />
+          )}
+        /> */}
         <Route
           path={'/accueil/parametre/type-tiers'}
           render={() => (
-            <TypeTiers
+            <VueTypeTiers
               icone={<MergeTypeIcon fontSize='large' />}
               titre='Type tiers'
               infoCookie={props.infoCookie}

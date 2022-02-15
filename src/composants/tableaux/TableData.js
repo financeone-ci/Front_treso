@@ -25,7 +25,7 @@ function TableData(props) {
     staleTime: 1 * 60 * 1000,
   })
 
-  // console.log(VueData.data.data.infos)
+  
   return (
     <>
       {VueData.isLoading ? (

@@ -35,7 +35,7 @@ function VueDevises(props) {
   ////////////// Droits de l'utilisateur
   var MachaineDeCrypte = CryptFunc(localStorage.getItem('_Drt'), 0)
   const leMenu = GroupBy(MachaineDeCrypte)
-  const DroitsUser = leMenu.group['Entités'][3]
+  const DroitsUser = leMenu.group['Eléments paiements'][1]
   // droits insuffisants
   const noRightFunc = () => {
     setNotify({
