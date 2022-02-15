@@ -83,7 +83,7 @@ function Societe(props) {
     const headers = {
       Authorization: cookieInfo,
     }
-    response = await axios.get(`sites/DeleteSite.php?id=${item}`, {
+    response = await axios.get(`societe/DeleteSociete.php?id=${item}`, {
       headers,
     })
     setOpenOuiNon(false)

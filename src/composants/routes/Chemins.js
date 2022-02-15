@@ -24,6 +24,7 @@ import Compte from '../../pages/Fenetres/Compte'
 import AuditsUsers from '../../pages/Fenetres/AuditsUsers'
 import AuditsSystem from '../../pages/Fenetres/AuditsSystem'
 import VueSites from '../../pages/Fenetres/sites/VueSites'
+import Flux from '../../pages/Fenetres/flux/VueFlux'
 import Rejets from '../../pages/Fenetres/Rejets'
 import Securite from '../../pages/Fenetres/Securite'
 import Parametrage from '../../pages/Fenetres/Parametrage'
@@ -240,7 +241,7 @@ function Chemins(props) {
             <VueFlux icone={<SyncAltIcon fontSize='large' />} titre='Flux' />
           )}
         />
-        {/* <Route
+        <Route
           path={'/accueil/parametre/flux'}
           render={() => (
             <Flux
@@ -249,7 +250,7 @@ function Chemins(props) {
               infoCookie={props.infoCookie}
             />
           )}
-        /> */}
+        />
         <Route
           path={'/accueil/parametre/code-budgetaire'}
           render={() => (
@@ -270,7 +271,7 @@ function Chemins(props) {
             />
           )}
         />
-        {/* <Route
+        <Route
           path={'/accueil/parametre/categorie-paiements'}
           render={() => (
             <CategoriePaiement
@@ -279,7 +280,7 @@ function Chemins(props) {
               infoCookie={props.infoCookie}
             />
           )}
-        /> */}
+        />
         <Route
           path={'/accueil/parametre/type-tiers'}
           render={() => (

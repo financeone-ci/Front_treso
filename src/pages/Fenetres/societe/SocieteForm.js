@@ -7,7 +7,6 @@ import ModalForm from '../../../composants/controls/modal/ModalForm'
 import Controls from '../../../composants/controls/Controls'
 import ReadCookie from '../../../functions/ReadCookie'
 import { makeStyles } from '@material-ui/core'
-import { Notification } from '../../../composants/controls/toast/MyToast'
 import { Formik, Form, Field, useField, ErrorMessage } from 'formik'
 import { Grid } from '@material-ui/core'
 import SpinnerForm from '../../../composants/controls/spinner/SpinnerForm'
@@ -31,7 +30,6 @@ const useStyles = makeStyles((theme) => ({
 function SocieteForm(props) {
   // Stats
   const [typeSubmit, setTypeSubmit] = useState(1)
-  // const [succes, setSucces] = useState(false)
 
   // Variables
   // lire les infos du cookie
@@ -40,38 +38,40 @@ function SocieteForm(props) {
   // Schema de validation du formulaire
   const schema = yup.object().shape({
     code: yup.string().required('Code obligatoire'),
-    libelle: yup.string().required('Nom complet obligatoire'),
+    description: yup.string().required('Nom complet obligatoire'),
     email: yup.string().email('adresse mail invalide'),
-    local: yup.string().required('Localisation obligatoire'),
     tel: yup.number('N° de téléphone invalide'),
     fax: yup.number('N° de fax invalide'),
   })
 
-  // Création d'un nouveau site
-  const submitSite = async (values) => {
+  const submitSociete = async (values) => {
     let response = ''
     const headers = {
       Authorization: cookieInfo,
     }
     if (values.id === '') {
+      // Création societe
       response = await axios.post(
-        'sites/CreateSite.php',
+        'societe/CreateSociete.php',
         { values },
         { headers },
       )
     } else {
+      // Modification societe
       response = await axios.post(
-        `sites/UpdateSite.php?id=${values.id}`,
+        `societe/UpdateSociete.php?id=${values.id}`,
         { values },
         { headers },
       )
     }
     typeSubmit === 1 && props.handleClose()
+
+    console.log(response)
     return response.data
   }
 
-  // Création d'un site
-  const societe = useMutation(submitSite, {
+  // Création d'une societe
+  const societe = useMutation(submitSociete, {
     onSuccess: (data) => {
       props.queryClient.invalidateQueries('listesociete')
       props.setNotify({
@@ -90,12 +90,14 @@ function SocieteForm(props) {
   })
 
   const classes = useStyles()
+
   return (
     <>
       <ModalForm
         title={props.titreModal}
         handleClose={props.handleClose}
         open={props.openModal}>
+        {societe.isLoading && <SpinnerForm />}
         <Formik
           noValidate
           initialValues={{
@@ -112,8 +114,8 @@ function SocieteForm(props) {
           validationSchema={schema}
           onSubmit={(values, onSubmitProps) => {
             societe.mutate(values, {
-              onSuccess: (e) => {
-                e.reponse == 'success' && onSubmitProps.resetForm()
+              onSuccess: (data) => {
+                data.reponse == 'success' && onSubmitProps.resetForm()
               },
             })
           }}>

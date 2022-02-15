@@ -136,7 +136,7 @@ function FormSite(props) {
                     margin='normal'
                     fullWidth
                     id='code'
-                    label='Code site'
+                    label='Code'
                     autoFocus
                     type='text'
                     thelperText={errors.code}
