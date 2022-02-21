@@ -66,7 +66,6 @@ function SocieteForm(props) {
     }
     typeSubmit === 1 && props.handleClose()
 
-    console.log(response)
     return response.data
   }
 

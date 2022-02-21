@@ -22,10 +22,8 @@ function TableData(props) {
 
   const VueData = useQuery(props.useQuery, fetchData, {
     cacheTime: 1 * 60 * 1000,
-    staleTime: 1 * 60 * 1000,
   })
 
-  
   return (
     <>
       {VueData.isLoading ? (
