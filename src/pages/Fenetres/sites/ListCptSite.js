@@ -11,6 +11,8 @@ import Checkbox from '@material-ui/core/Checkbox'
 import axios from '../../../api/axios'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
+import { isEmpty } from 'lodash'
+import { isEmptyArray } from 'formik'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -68,6 +70,15 @@ function ListCptSite(props) {
               message: response.data.message,
             })
             props.setOpenNotif(true)
+          }
+          if (response.data.reponse == 'success') {
+            if (isEmptyArray(response.data.infos)) {
+              props.setNotify({
+                type: 'error',
+                message: 'Comptes inexistant',
+              })
+              props.setOpenNotif(true)
+            }
           }
         })
         .catch((error) => {

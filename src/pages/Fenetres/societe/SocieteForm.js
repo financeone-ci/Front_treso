@@ -7,7 +7,6 @@ import ModalForm from '../../../composants/controls/modal/ModalForm'
 import Controls from '../../../composants/controls/Controls'
 import ReadCookie from '../../../functions/ReadCookie'
 import { makeStyles } from '@material-ui/core'
-import { Notification } from '../../../composants/controls/toast/MyToast'
 import { Formik, Form, Field, useField, ErrorMessage } from 'formik'
 import { Grid } from '@material-ui/core'
 import SpinnerForm from '../../../composants/controls/spinner/SpinnerForm'
@@ -28,10 +27,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-function FormSite(props) {
+function SocieteForm(props) {
   // Stats
   const [typeSubmit, setTypeSubmit] = useState(1)
-  const [succes, setSucces] = useState(false)
 
   // Variables
   // lire les infos du cookie
@@ -40,38 +38,41 @@ function FormSite(props) {
   // Schema de validation du formulaire
   const schema = yup.object().shape({
     code: yup.string().required('Code obligatoire'),
-    description: yup.string().required('Description obligatoire'),
-    representant: yup.string().required('Représentant obligatoire'),
-    local: yup.string().required('Localisation obligatoire'),
+    description: yup.string().required('Nom complet obligatoire'),
+    email: yup.string().email('adresse mail invalide'),
+    tel: yup.number('N° de téléphone invalide'),
+    fax: yup.number('N° de fax invalide'),
   })
 
-  // Création d'un nouveau site
-  const submitSite = async (values) => {
+  const submitSociete = async (values) => {
     let response = ''
     const headers = {
       Authorization: cookieInfo,
     }
     if (values.id === '') {
+      // Création societe
       response = await axios.post(
-        'sites/CreateSite.php',
+        'societe/CreateSociete.php',
         { values },
         { headers },
       )
     } else {
+      // Modification societe
       response = await axios.post(
-        `sites/UpdateSite.php?id=${values.id}`,
+        `societe/UpdateSociete.php?id=${values.id}`,
         { values },
         { headers },
       )
     }
     typeSubmit === 1 && props.handleClose()
+
     return response.data
   }
 
-  // Création d'un site
-  const site = useMutation(submitSite, {
+  // Création d'une societe
+  const societe = useMutation(submitSociete, {
     onSuccess: (data) => {
-      props.queryClient.invalidateQueries('listesite')
+      props.queryClient.invalidateQueries('listesociete')
       props.setNotify({
         type: data.reponse,
         message: data.message,
@@ -88,27 +89,32 @@ function FormSite(props) {
   })
 
   const classes = useStyles()
+
   return (
     <>
       <ModalForm
         title={props.titreModal}
         handleClose={props.handleClose}
         open={props.openModal}>
-        {site.isLoading && <SpinnerForm />}
+        {societe.isLoading && <SpinnerForm />}
         <Formik
           noValidate
           initialValues={{
             id: props.initialModal.id,
             code: props.initialModal.code,
             description: props.initialModal.description,
-            representant: props.initialModal.representant,
-            local: props.initialModal.local,
+            email: props.initialModal.email,
+            siege: props.initialModal.siege,
+            adresse: props.initialModal.adresse,
+            tel: props.initialModal.tel,
+            fax: props.initialModal.fax,
+            complement: props.initialModal.complement,
           }}
           validationSchema={schema}
           onSubmit={(values, onSubmitProps) => {
-            site.mutate(values, {
-              onSuccess: (e) => {
-                e.reponse == 'success' && onSubmitProps.resetForm()
+            societe.mutate(values, {
+              onSuccess: (data) => {
+                data.reponse == 'success' && onSubmitProps.resetForm()
               },
             })
           }}>
@@ -136,7 +142,7 @@ function FormSite(props) {
                     margin='normal'
                     fullWidth
                     id='code'
-                    label='Code'
+                    label='Code société'
                     autoFocus
                     type='text'
                     thelperText={errors.code}
@@ -148,7 +154,7 @@ function FormSite(props) {
                     margin='normal'
                     fullWidth
                     id='description'
-                    label='Description'
+                    label='Nom complet'
                     type='text'
                     thelperText={errors.description}
                     terror={errors.description && true}
@@ -160,25 +166,73 @@ function FormSite(props) {
                     variant='outlined'
                     margin='normal'
                     fullWidth
-                    id='representant'
-                    label='Représentant'
+                    id='tel'
+                    label='Téléphone'
                     type='text'
-                    thelperText={errors.representant}
-                    terror={errors.representant && true}
-                    name='representant'
+                    thelperText={errors.tel}
+                    terror={errors.tel && true}
+                    name='tel'
                   />
                   <Controls.TextInput
                     variant='outlined'
                     margin='normal'
                     fullWidth
-                    id='local'
-                    label='Localisation'
+                    id='fax'
+                    label='Fax'
                     type='text'
-                    thelperText={errors.local}
-                    terror={errors.local && true}
-                    name='local'
+                    thelperText={errors.fax}
+                    terror={errors.fax && true}
+                    name='fax'
                   />
                 </Grid>
+                <Grid item xs={6} sm={6} lg={6}>
+                  <Controls.TextInput
+                    variant='outlined'
+                    margin='normal'
+                    fullWidth
+                    id='email'
+                    label='Adresse mail'
+                    type='email'
+                    thelperText={errors.email}
+                    terror={errors.email && true}
+                    name='email'
+                  />
+                  <Controls.TextInput
+                    variant='outlined'
+                    margin='normal'
+                    fullWidth
+                    id='adresse'
+                    label='Adresse'
+                    type='text'
+                    thelperText={errors.adresse}
+                    terror={errors.adresse && true}
+                    name='adresse'
+                  />
+                </Grid>
+                <Grid item xs={6} sm={6} lg={6}>
+                  <Controls.TextInput
+                    variant='outlined'
+                    margin='normal'
+                    fullWidth
+                    id='siege'
+                    label='Siege'
+                    type='text'
+                    thelperText={errors.siege}
+                    terror={errors.siege && true}
+                    name='siege'
+                  />
+                  <Controls.TextInput
+                    variant='outlined'
+                    margin='normal'
+                    fullWidth
+                    id='complement'
+                    label='Complément société'
+                    type='text'
+                    thelperText={errors.complement}
+                    terror={errors.complement && true}
+                    name='complement'
+                  />
+                </Grid>{' '}
               </Grid>
 
               <div className={classes.buton}>
@@ -187,7 +241,7 @@ function FormSite(props) {
                   onClick={() => setTypeSubmit(1)}>
                   Valider
                 </Controls.ButtonLabel>
-                {props.initialModal.id === '' && (
+                {props.initialModal.id == 0 && (
                   <Controls.ButtonLabel
                     color='secondary'
                     onClick={() => setTypeSubmit(2)}>
@@ -203,4 +257,4 @@ function FormSite(props) {
   )
 }
 
-export default FormSite
+export default SocieteForm

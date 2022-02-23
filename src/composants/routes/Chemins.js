@@ -17,13 +17,14 @@ import StrucImport from '../../pag../../pages/Fenetres/StrucImport'
 import VueTypeTiers from '../../pages/Fenetres/type-tiers/VueTypeTiers'
 import Tiers from '../../pages/Fenetres/tiers/VueTiers'
 import CompteTiers from '../../pages/Fenetres/CompteTiers'
-import Societe from '../../pages/Fenetres/Societe'
+import Societe from '../../pages/Fenetres/societe/Societe'
 import Utilisateurs from '../../pages/Fenetres/Utilisateurs'
 import Banque from '../../pages/Fenetres/Banque'
-import Compte from '../../pages/Fenetres/Compte'
+import Compte from '../../pages/Fenetres/comptes/Compte'
 import AuditsUsers from '../../pages/Fenetres/AuditsUsers'
 import AuditsSystem from '../../pages/Fenetres/AuditsSystem'
 import VueSites from '../../pages/Fenetres/sites/VueSites'
+import Flux from '../../pages/Fenetres/flux/VueFlux'
 import Rejets from '../../pages/Fenetres/Rejets'
 import Securite from '../../pages/Fenetres/Securite'
 import Parametrage from '../../pages/Fenetres/Parametrage'
@@ -75,10 +76,6 @@ function Chemins(props) {
   return (
     <>
       <Switch>
-   
-     
-      
-    
         // Routes niveau 1
         <Route exact path='/accueil' component={DashBoard} />
         // Routes niveau 2
@@ -139,8 +136,6 @@ function Chemins(props) {
             />
           )}
         />
-
-
         // Routes niveau 3
         <Route
           path={'/accueil/administration/profils'}
@@ -210,7 +205,6 @@ function Chemins(props) {
             />
           )}
         />
-        
         <Route
           path={'/accueil/parametre/societes'}
           render={() => (
@@ -244,13 +238,10 @@ function Chemins(props) {
         <Route
           path={'/accueil/parametre/flux'}
           render={() => (
-            <VueFlux
-              icone={<SyncAltIcon fontSize='large' />}
-              titre='Flux'
-            />
+            <VueFlux icone={<SyncAltIcon fontSize='large' />} titre='Flux' />
           )}
         />
-        {/* <Route
+        <Route
           path={'/accueil/parametre/flux'}
           render={() => (
             <Flux
@@ -259,7 +250,7 @@ function Chemins(props) {
               infoCookie={props.infoCookie}
             />
           )}
-        /> */}
+        />
         <Route
           path={'/accueil/parametre/code-budgetaire'}
           render={() => (
@@ -280,7 +271,7 @@ function Chemins(props) {
             />
           )}
         />
-        {/* <Route
+        <Route
           path={'/accueil/parametre/categorie-paiements'}
           render={() => (
             <CategoriePaiement
@@ -289,7 +280,7 @@ function Chemins(props) {
               infoCookie={props.infoCookie}
             />
           )}
-        /> */}
+        />
         <Route
           path={'/accueil/parametre/type-tiers'}
           render={() => (
