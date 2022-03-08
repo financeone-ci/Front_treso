@@ -41,7 +41,6 @@ function UtilisateursForm(props) {
     role: yup.string().required('Champs obligatoire'),
     nom: yup.string().nullable().required('Champs obligatoire'),
     prenom: yup.string().nullable().required('Champs obligatoire'),
-
     profil: yup.string().required('Champs obligatoire'),
     actif: yup.string().required('Champs obligatoire'),
   })

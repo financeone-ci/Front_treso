@@ -83,6 +83,7 @@ export default function LoginForm() {
 
   const userCnx = useMutation(onSubmit, {
     onSuccess: (data) => {
+      console.log(data)
       // Cryptage du jeton
       setCookie('_Jst', data.jeton, {
         path: '/',

@@ -9,24 +9,24 @@ import MenuBanque from '../../pages/Fenetres/MenuBanque'
 import DefinePassword from '../../pages/Fenetres/DefinePassword'
 import MenuTresorerie from '../../pages/Fenetres/MenuTresorerie'
 import Administration from '../../pages/Fenetres/Administration'
-import Profils from '../../pages/Fenetres/Profils'
 import Devises from '../../pages/Fenetres/devise/VueDevises'
 import CodeBudgetaire from '../../pages/Fenetres/CodeBudgetaire'
 import CategoriePaiement from '../../pages/Fenetres/categorie-paiements/VueCategoriePaiements'
 import StrucImport from '../../pag../../pages/Fenetres/StrucImport'
 import VueTypeTiers from '../../pages/Fenetres/type-tiers/VueTypeTiers'
+import VueProfils from '../../pages/Fenetres/profils/VueProfils'
 import Tiers from '../../pages/Fenetres/tiers/VueTiers'
 import CompteTiers from '../../pages/Fenetres/CompteTiers'
 import Societe from '../../pages/Fenetres/societe/Societe'
 import Utilisateurs from '../../pages/Fenetres/Utilisateurs'
 import Banque from '../../pages/Fenetres/Banque'
 import Compte from '../../pages/Fenetres/comptes/Compte'
-import AuditsUsers from '../../pages/Fenetres/AuditsUsers'
-import AuditsSystem from '../../pages/Fenetres/AuditsSystem'
+import VueAuditUsers from '../../pages/Fenetres/audit-connexion/VueAudit'
+import AuditsSystem from '../../pages/Fenetres/audit-systeme/VueAudit'
 import VueSites from '../../pages/Fenetres/sites/VueSites'
 import Flux from '../../pages/Fenetres/flux/VueFlux'
 import Rejets from '../../pages/Fenetres/Rejets'
-import Securite from '../../pages/Fenetres/Securite'
+import Securite from '../../pages/Fenetres/securite/VueSecurite'
 import Parametrage from '../../pages/Fenetres/Parametrage'
 import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount'
 import SecurityIcon from '@material-ui/icons/Security'
@@ -72,6 +72,22 @@ function Chemins(props) {
     const uniqueSet = new Set(menu_admin)
     return [...uniqueSet]
   }
+  const roads = {
+    content: {
+      body: [
+        {
+          _uid: "BUY6Drn9e1",
+          lien: '/accueil/banque',
+          component: <MenuBanque
+              icone={<SupervisorAccountIcon fontSize='large' />}
+              titre='Banque'
+              menu={MenuCreator(2)}
+            />
+        },
+        
+      ]
+    }
+  };
 
   return (
     <>
@@ -137,7 +153,7 @@ function Chemins(props) {
           )}
         />
         // Routes niveau 3
-        <Route
+        {/* {<Route
           path={'/accueil/administration/profils'}
           render={() => (
             <Profils
@@ -146,7 +162,14 @@ function Chemins(props) {
               infoCookie={props.infoCookie}
             />
           )}
+        />} */}
+        <Route
+          path={'/accueil/administration/profils'}
+          render={() => (
+            <VueProfils icone={<SyncAltIcon fontSize='large' />} titre='Profils' />
+          )}
         />
+
         <Route
           path={'/accueil/administration/utilisateurs'}
           render={() => (
@@ -170,7 +193,7 @@ function Chemins(props) {
         <Route
           path={'/accueil/administration/audits-connexions'}
           render={() => (
-            <AuditsUsers
+            <VueAuditUsers
               icone={<AssistantPhotoIcon fontSize='large' />}
               titre='Audits Utilisateurs'
               infoCookie={props.infoCookie}
@@ -241,7 +264,7 @@ function Chemins(props) {
             <VueFlux icone={<SyncAltIcon fontSize='large' />} titre='Flux' />
           )}
         />
-        <Route
+        {/* <Route
           path={'/accueil/parametre/flux'}
           render={() => (
             <Flux
@@ -250,7 +273,7 @@ function Chemins(props) {
               infoCookie={props.infoCookie}
             />
           )}
-        />
+        /> */}
         <Route
           path={'/accueil/parametre/code-budgetaire'}
           render={() => (

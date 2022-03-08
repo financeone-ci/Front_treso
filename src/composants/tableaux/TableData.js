@@ -20,10 +20,10 @@ function TableData(props) {
     return response.data
   }
 
-  const VueData = useQuery(props.useQuery, fetchData, {
+  const  VueData = useQuery(props.useQuery, fetchData, {
     cacheTime: 1 * 60 * 1000,
   })
-
+  
   return (
     <>
       {VueData.isLoading ? (
@@ -38,6 +38,7 @@ function TableData(props) {
                 localeText={frFR.props.MuiDataGrid.localeText}
                 rows={VueData.data.infos}
                 columns={tableColumns}
+               
                 density='compact'
                 rowHeight={30}
                 pagination={true}
