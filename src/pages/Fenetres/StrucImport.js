@@ -1,50 +1,50 @@
 /** @format */
-import React, { useEffect, useState } from 'react'
-import PageHeader from '../../composants/PageHeader'
-import TableauBasic from '../../composants/tableaux/TableauBasic'
-import { Paper, Grid } from '@material-ui/core'
-import Controls from '../../composants/controls/Controls'
-import Constantes from '../../api/Constantes'
-import BarreButtons from '../../composants/BarreButtons'
-import Buttons from '../../composants/controls/Buttons'
-import AddIcon from '@material-ui/icons/Add'
-import { makeStyles } from '@material-ui/core/styles'
-import StrucImportForm from './StrucImportForm'
-import CreateIcon from '@material-ui/icons/Create'
-import DeleteSweepIcon from '@material-ui/icons/DeleteSweep'
-import IconButton from '@material-ui/core/IconButton'
-import ModalOuiNon from '../../composants/controls/modal/ModalOuiNon'
-import axios from '../../api/axios'
-import { Notification } from '../../composants/controls/toast/MyToast'
-import CryptFunc from '../../functions/CryptFunc'
-import GroupBy from '../../functions/GroupBy'
+import React, { useEffect, useState } from "react";
+import PageHeader from "../../composants/PageHeader";
+import TableauBasic from "../../composants/tableaux/TableauBasic";
+import { Paper, Grid } from "@material-ui/core";
+import Controls from "../../composants/controls/Controls";
+import Constantes from "../../api/Constantes";
+import BarreButtons from "../../composants/BarreButtons";
+import Buttons from "../../composants/controls/Buttons";
+import AddIcon from "@material-ui/icons/Add";
+import { makeStyles } from "@material-ui/core/styles";
+import StrucImportForm from "./StrucImportForm";
+import CreateIcon from "@material-ui/icons/Create";
+import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
+import IconButton from "@material-ui/core/IconButton";
+import ModalOuiNon from "../../composants/controls/modal/ModalOuiNon";
+import axios from "../../api/axios";
+import { Notification } from "../../composants/controls/toast/MyToast";
+import CryptFunc from "../../functions/CryptFunc";
+import GroupBy from "../../functions/GroupBy";
 
 const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(0.5),
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
-}))
+}));
 
 function StrucImport(props) {
   // Lignes du tableau
-  
-  const [listStrucImport, setListStrucImport] = useState([])
-  const [loader, setLoader] = useState(false)
-  const [openStrucImport, setOpenStrucImport] = useState(false)
+
+  const [listStrucImport, setListStrucImport] = useState([]);
+  const [loader, setLoader] = useState(false);
+  const [openStrucImport, setOpenStrucImport] = useState(false);
 
   // valeurs initiales
-  const [openNotif, setOpenNotif] = useState(false)
+  const [openNotif, setOpenNotif] = useState(false);
 
-  const [opens_, setOpens_] = React.useState(false) // statut du modal suppression
-  const [idProf, setidProf] = React.useState('') // idprofil à editer ou supprimer?
+  const [opens_, setOpens_] = React.useState(false); // statut du modal suppression
+  const [idProf, setidProf] = React.useState(""); // idprofil à editer ou supprimer?
   const [init, setInit] = useState({
     id: 0,
-    code: '',
-    description: '',
+    code: "",
+    description: "",
     pos_taxe: 0,
     pos_benef: 0,
     pos_ref_benef: 0,
@@ -57,16 +57,16 @@ function StrucImport(props) {
     pos_date: 0,
     pos_marche: 0,
     pos_retenue: 0,
-  })
-  
+  });
+
   const [notify, setNotify] = useState({
-    type: '',
-    message: '',
-  })
+    type: "",
+    message: "",
+  });
 
   const handleCloseModal_ = () => {
-    setOpens_(false)
-  }
+    setOpens_(false);
+  };
 
   //Supression du Structure
   const StopCnx = (id) => {
@@ -74,175 +74,175 @@ function StrucImport(props) {
       url: `/Strucimport.php?type=D&id=${id}`,
     })
       .then((response) => {
-        if (response.data.reponse == 'success') {
+        if (response.data.reponse == "success") {
           setNotify({
             type: response.data.reponse,
             message: response.data.message,
-          })
-          setOpenNotif(true)
+          });
+          setOpenNotif(true);
           //////////////////
-          setLoader(true)
+          setLoader(true);
 
-          fetch(Constantes.URL + 'StrucImport.php?type=R')
+          fetch(Constantes.URL + "StrucImport.php?type=R")
             .then((response) => response.json())
-            .then((data) => setListStrucImport(data.infos))
-          setLoader(false)
+            .then((data) => setListStrucImport(data.infos));
+          setLoader(false);
           ///////////////////
         } else {
           setNotify({
-            type: 'error',
+            type: "error",
             message: response.data.message,
-          })
-          setOpenNotif(true)
+          });
+          setOpenNotif(true);
         }
       })
       .catch((error) => {
-        console.log(error)
-      })
-    setOpens_(false)
-  }
+        console.log(error);
+      });
+    setOpens_(false);
+  };
 
   // Modal Supression de la structure
   const FuncSuppr = (id) => {
-    setOpens_(true)
-    setidProf(id)
-  }
+    setOpens_(true);
+    setidProf(id);
+  };
 
   // Entetes du tableau
   const enteteCol = [
     {
-      field: 'id',
+      field: "id",
       hide: true,
       editable: false,
-      headerName: 'id',
+      headerName: "id",
       width: 20,
       columnResizeIcon: true,
     },
     {
-      field: 'code',
+      field: "code",
       hide: false,
       editable: false,
-      headerName: 'Code Structure',
+      headerName: "Code Structure",
       width: 100,
       columnResizeIcon: true,
       // resizable: 'true',
     },
     {
-      field: 'description',
+      field: "description",
       hide: false,
       editable: false,
-      headerName: 'Description',
+      headerName: "Description",
       width: 100,
       columnResizeIcon: true,
     },
     {
-      field: 'pos_taxe',
+      field: "pos_taxe",
       hide: false,
       editable: false,
-      headerName: 'Taxe',
+      headerName: "Taxe",
       width: 100,
       columnResizeIcon: true,
     },
     {
-      field: 'pos_benef',
+      field: "pos_benef",
       hide: false,
       editable: false,
-      headerName: 'Bénéficiaire',
+      headerName: "Bénéficiaire",
       width: 100,
       columnResizeIcon: true,
     },
     {
-      field: 'pos_ref_benef',
+      field: "pos_ref_benef",
       hide: false,
       editable: false,
-      headerName: 'Référence Bénéf',
+      headerName: "Référence Bénéf",
       width: 100,
       columnResizeIcon: true,
     },
     {
-      field: 'pos_montant',
+      field: "pos_montant",
       hide: false,
       editable: false,
-      headerName: 'Montant',
+      headerName: "Montant",
       width: 100,
       columnResizeIcon: true,
     },
     {
-      field: 'pos_num',
+      field: "pos_num",
       hide: false,
       editable: false,
-      headerName: 'N° Engagement',
+      headerName: "N° Engagement",
       width: 100,
       columnResizeIcon: true,
     },
     {
-      field: 'pos_num_bon',
+      field: "pos_num_bon",
       hide: false,
       editable: false,
-      headerName: 'N° bon commande',
+      headerName: "N° bon commande",
       width: 100,
       columnResizeIcon: true,
     },
     {
-      field: 'pos_motif',
+      field: "pos_motif",
       hide: false,
       editable: false,
-      headerName: 'Motif',
+      headerName: "Motif",
       width: 100,
       columnResizeIcon: true,
     },
     {
-      field: 'pos_echeance',
+      field: "pos_echeance",
       hide: false,
       editable: false,
-      headerName: 'Echéance',
+      headerName: "Echéance",
       width: 100,
       columnResizeIcon: true,
     },
     {
-      field: 'pos_budget',
+      field: "pos_budget",
       hide: false,
       editable: false,
-      headerName: 'Budget',
+      headerName: "Budget",
       width: 100,
       columnResizeIcon: true,
     },
     {
-      field: 'pos_date',
+      field: "pos_date",
       hide: false,
       editable: false,
-      headerName: 'Date',
-      width: 100,
-      columnResizeIcon: true,
-      // resizable: 'true',
-    },
-    {
-      field: 'pos_marche',
-      hide: false,
-      editable: false,
-      headerName: 'Marche',
+      headerName: "Date",
       width: 100,
       columnResizeIcon: true,
       // resizable: 'true',
     },
     {
-      field: 'pos_retenue',
+      field: "pos_marche",
       hide: false,
       editable: false,
-      headerName: 'Retenue',
+      headerName: "Marche",
       width: 100,
       columnResizeIcon: true,
       // resizable: 'true',
     },
     {
-      field: 'Actions',
+      field: "pos_retenue",
+      hide: false,
+      editable: false,
+      headerName: "Retenue",
+      width: 100,
+      columnResizeIcon: true,
+      // resizable: 'true',
+    },
+    {
+      field: "Actions",
       width: 125,
-      align: 'center',
+      align: "center",
       renderCell: (e) => (
         <>
           <IconButton
-            aria-label='update'
-            size='small'
+            aria-label="update"
+            size="small"
             onClick={() => {
               DroitsUser.droits_modifier == 1
                 ? handleClickOpenStrucImport(
@@ -260,53 +260,54 @@ function StrucImport(props) {
                     e.row.pos_budget,
                     e.row.pos_date,
                     e.row.pos_marche,
-                    e.row.pos_retenue,
+                    e.row.pos_retenue
                   )
-                : noRightFunc()
-            }}>
+                : noRightFunc();
+            }}
+          >
             <CreateIcon
-              fontSize='inherit'
-              color='default'
-              className='CreateIcon'
+              fontSize="inherit"
+              color="default"
+              className="CreateIcon"
             />
           </IconButton>
           <IconButton
-            aria-label='delete'
-            size='small'
+            aria-label="delete"
+            size="small"
             onClick={() => {
               DroitsUser.droits_supprimer == 1
                 ? FuncSuppr(e.row.id)
-                : noRightFunc()
-            }}>
+                : noRightFunc();
+            }}
+          >
             <DeleteSweepIcon
-              color='default'
-              fontSize='inherit'
-              className='DeleteSweepIcon'
+              color="default"
+              fontSize="inherit"
+              className="DeleteSweepIcon"
             />
           </IconButton>
         </>
       ),
     },
-  ]
+  ];
 
   // recuperation des Structures
 
   useEffect(() => {
-    setLoader(true)
-    fetch(Constantes.URL + '/Strucimport.php?type=R')
-      .then((response) =>  response.json())
+    setLoader(true);
+    fetch(Constantes.URL + "/Strucimport.php?type=R")
+      .then((response) => response.json())
       .then((data) => {
-        setListStrucImport(data.infos)
-      })
-    setLoader(false)
-  }, [])
-
+        setListStrucImport(data.infos);
+      });
+    setLoader(false);
+  }, []);
 
   //Ouverture modal Structure
   const handleClickOpenStrucImport = (
     id = 0,
-    code = '',
-    description = '',
+    code = "",
+    description = "",
     pos_taxe = 0,
     pos_benef = 0,
     pos_ref_benef = 0,
@@ -318,7 +319,7 @@ function StrucImport(props) {
     pos_budget = 0,
     pos_date = 0,
     pos_marche = 0,
-    pos_retenue = 0,
+    pos_retenue = 0
   ) => {
     setInit({
       id: id,
@@ -336,33 +337,31 @@ function StrucImport(props) {
       pos_date: pos_date,
       pos_marche: pos_marche,
       pos_retenue: pos_retenue,
+    });
 
-      
-    })
-
-    setOpenStrucImport(true)
-  }
+    setOpenStrucImport(true);
+  };
   const handleCloseStrucImport = () => {
-    setOpenStrucImport(false)
-  }
+    setOpenStrucImport(false);
+  };
 
   ////////////// Droits de l'utilisateur
-  var MachaineDeCrypte = CryptFunc(localStorage.getItem('_Drt'), 0)
-  const leMenu = GroupBy(MachaineDeCrypte)
-  const DroitsUser = leMenu.group['interfaces'][0]
+  var MachaineDeCrypte = CryptFunc(localStorage.getItem("_Drt"), 0);
+  const leMenu = GroupBy(MachaineDeCrypte);
+  const DroitsUser = leMenu.group["interfaces"][0];
 
   // fonction pas assez de droits
   const noRightFunc = () => {
     setNotify({
-      type: 'error',
-      message: 'Droits insuffisants',
-    })
+      type: "error",
+      message: "Droits insuffisants",
+    });
 
-    setOpenNotif(true)
-  }
-  
-  const classes = useStyles()
-  
+    setOpenNotif(true);
+  };
+
+  const classes = useStyles();
+
   //console.log(DroitsUser)
 
   return (
@@ -373,23 +372,24 @@ function StrucImport(props) {
         buttons={
           <>
             <Buttons
-              variant='contained'
-              color='primary'
-              size='small'
+              variant="contained"
+              color="primary"
+              size="small"
               onClick={() => {
                 DroitsUser.droits_creer == 1
                   ? handleClickOpenStrucImport()
-                  : noRightFunc()
+                  : noRightFunc();
               }}
               className={classes.button}
-              startIcon={<AddIcon />}>
+              startIcon={<AddIcon />}
+            >
               Créer
             </Buttons>
           </>
         }
       />
       {loader ? (
-        <Paper elevation={0} className='paperLoad'>
+        <Paper elevation={0} className="paperLoad">
           <Controls.SpinnerBase />
         </Paper>
       ) : (
@@ -402,17 +402,17 @@ function StrucImport(props) {
               donnees={listStrucImport}
               onRowClick={(e) => {}}
               pagination
-            /> 
-          </Grid>{' '}
+            />
+          </Grid>{" "}
           <StrucImportForm
             setListStrucImport={setListStrucImport}
             initial_={init}
             handleClose={handleCloseStrucImport}
             open={openStrucImport}
             titreModal={
-              init.id == ''
-                ? 'Nouvelle Structure'
-                : 'Modifier Structure: ' + init.code
+              init.id == ""
+                ? "Nouvelle Structure"
+                : "Modifier Structure: " + init.code
             }
             infoCookie={props.infoCookie}
           />
@@ -421,10 +421,10 @@ function StrucImport(props) {
       <ModalOuiNon
         open={opens_}
         onClose={handleCloseModal_}
-        titre={'Supprimer ?'}
-        message={'Voulez vous Supprimer cette structure ?'}
-        non='Annuler'
-        oui='Oui'
+        titre={"Supprimer ?"}
+        message={"Voulez vous Supprimer cette structure ?"}
+        non="Annuler"
+        oui="Oui"
         deconnect={() => StopCnx(idProf)}
       />
       <Notification
@@ -434,7 +434,7 @@ function StrucImport(props) {
         setOpen={setOpenNotif}
       />
     </>
-  )
+  );
 }
 
-export default StrucImport
+export default StrucImport;

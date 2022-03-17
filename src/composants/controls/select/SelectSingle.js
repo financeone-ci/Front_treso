@@ -1,12 +1,5 @@
-/**
- * /* eslint-disable no-use-before-define
- *
- * @format
- */
-
+/* eslint-disable no-use-before-define */
 import React, { useEffect, useState } from "react";
-import axios from "../../../api/axios";
-import { useQuery } from "react-query";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
@@ -23,32 +16,15 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ComboSingle(props) {
   const [field, meta] = useField(props);
-
-  // Chargement des données
-  // const fetchData = async () => {
-  //   const headers = {
-  //     Authorization: props.Authorization,
-  //   }
-  //   let response = await axios(props.api, {
-  //     headers,
-  //   })
-
-  //   console.log(response.data)
-  //   return response.data
-  // }
-
-  // const VueData = useQuery(props.useQuery, props.fetchData, {
-  //   cacheTime: 1 * 60 * 1000,
-  // })
-  const [defaultV, setDefaultV] = useState();
-
+  const [data, setData] = useState([]);
+  const [defaut, setDefaut] = useState(props.defaut);
   useEffect(() => {
-    setDefaultV(props.defaut);
-  }, [props.defaut]);
-  // console.log(props.defaut);
-
+    setData(props.data);
+    setDefaut(props.defaut);
+  }, [props]);
   const classes = useStyles();
 
+  //console.log(defaut)
   return (
     <div className={classes.root}>
       <Autocomplete
@@ -56,10 +32,9 @@ export default function ComboSingle(props) {
         id={props.name}
         fullWidth={true}
         size="small"
-        options={props.data}
+        options={data}
         getOptionLabel={(option) => option[props.code]}
-        multiple={props.multiple || false}
-        defaultValue={props.defaut}
+        defaultValue={defaut}
         {...props}
         renderInput={(params) => (
           <>
@@ -67,8 +42,8 @@ export default function ComboSingle(props) {
               fullWidth={true}
               {...params}
               variant="outlined"
-              label={props.name}
-              placeholder={props.name}
+              label={props.name || "Profil"}
+              placeholder={props.name || "Profil"}
               helperText={meta.touched && meta.error ? props.thelperText : ""}
               error={meta.touched && meta.error ? props.terror : false}
               {...field}

@@ -1,121 +1,121 @@
 /** @format */
 
-import React, { useState } from 'react'
-import Avatar from '@material-ui/core/Avatar'
-import Button from '@material-ui/core/Button'
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
-import Box from '@material-ui/core/Box'
-import { makeStyles } from '@material-ui/core'
-import Grid from '@material-ui/core/Grid'
-import Link from '@material-ui/core/Link'
-import Typography from '@material-ui/core/Typography'
-import * as yup from 'yup'
-import { NavLink, useHistory } from 'react-router-dom'
-import axios from '../api/axios'
-import Controls from './controls/Controls'
-import { Notification } from '../composants/controls/toast/MyToast'
-import { useCookies } from 'react-cookie'
-import { Formik, Form, Field, useField, ErrorMessage } from 'formik'
-import CryptFunc from '../functions/CryptFunc'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import Backdrop from '@material-ui/core/Backdrop'
-import CircularProgress from '@material-ui/core/CircularProgress'
+import React, { useState } from "react";
+import Avatar from "@material-ui/core/Avatar";
+import Button from "@material-ui/core/Button";
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import Box from "@material-ui/core/Box";
+import { makeStyles } from "@material-ui/core";
+import Grid from "@material-ui/core/Grid";
+import Link from "@material-ui/core/Link";
+import Typography from "@material-ui/core/Typography";
+import * as yup from "yup";
+import { NavLink, useHistory } from "react-router-dom";
+import axios from "../api/axios";
+import Controls from "./controls/Controls";
+import { Notification } from "../composants/controls/toast/MyToast";
+import { useCookies } from "react-cookie";
+import { Formik, Form, Field, useField, ErrorMessage } from "formik";
+import CryptFunc from "../functions/CryptFunc";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 function Copyright() {
   return (
-    <Typography variant='body2' color='textSecondary' align='center'>
-      {'Copyright © '}
-      <Link color='inherit' href='https://financeone-ci.com'>
+    <Typography variant="body2" color="textSecondary" align="center">
+      {"Copyright © "}
+      <Link color="inherit" href="https://financeone-ci.com">
         FinanceOne-ci
-      </Link>{' '}
+      </Link>{" "}
       {new Date().getFullYear()}
-      {'.'}
+      {"."}
     </Typography>
-  )
+  );
 }
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: '100vh',
+    height: "100vh",
   },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
-    color: '#fff',
+    color: "#fff",
   },
-}))
+}));
 
 export default function LoginForm() {
   const [notify, setNotify] = useState({
-    type: '',
-    message: '',
-  })
-  const [openNotif, setOpenNotif] = useState(false)
-  const [open, setOpen] = React.useState(false)
+    type: "",
+    message: "",
+  });
+  const [openNotif, setOpenNotif] = useState(false);
+  const [open, setOpen] = React.useState(false);
   const handleClose = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
   const handleToggle = () => {
-    setOpen(!open)
-  }
+    setOpen(!open);
+  };
   // Cookie
-  const [cookies, setCookie] = useCookies(['_Jst'])
+  const [cookies, setCookie] = useCookies(["_Jst"]);
 
   const schema = yup.object().shape({
-    user: yup.string().required('Utilisateur obligatoire'),
-    pwd: yup.string().required('Mot de passe obligatoire'),
-  })
+    user: yup.string().required("Utilisateur obligatoire"),
+    pwd: yup.string().required("Mot de passe obligatoire"),
+  });
 
-  let history = useHistory()
+  let history = useHistory();
 
   // validation du formulaire
   const onSubmit = async (values) => {
-    let response = await axios.post('login/Connexion.php', { values })
-    return response.data
-  }
+    let response = await axios.post("login/Connexion.php", { values });
+    return response.data;
+  };
 
   const userCnx = useMutation(onSubmit, {
     onSuccess: (data) => {
-      console.log(data)
+      // console.log(data)
       // Cryptage du jeton
-      setCookie('_Jst', data.jeton, {
-        path: '/',
+      setCookie("_Jst", data.jeton, {
+        path: "/",
         //httpOnly: true,
-      })
+      });
 
-      if (data.reponse === 'success') {
+      if (data.reponse === "success") {
         // Redirection
-        if (data.jeton && data.newConnexion === '0') {
-          history.push('/accueil')
+        if (data.jeton && data.newConnexion === "0") {
+          history.push("/accueil");
         } else {
-          history.push('/accueil/definePassword')
+          history.push("/accueil/definePassword");
         }
       } else {
-        setNotify({ message: data.message, type: data.reponse })
-        setOpenNotif(true)
+        setNotify({ message: data.message, type: data.reponse });
+        setOpenNotif(true);
       }
       // cryptage
-      var MachaineCrypte = CryptFunc(data.droit, 1)
+      var MachaineCrypte = CryptFunc(data.droit, 1);
       // enregistrement dans local storage
-      localStorage.setItem('_Drt', MachaineCrypte)
+      localStorage.setItem("_Drt", MachaineCrypte);
     },
     onError: () => {
-      setNotify({ message: 'Connexion impossible', type: 'error' })
-      setOpenNotif(true)
+      setNotify({ message: "Connexion impossible", type: "error" });
+      setOpenNotif(true);
     },
     onMutate: () => {
-      handleToggle()
+      handleToggle();
     },
-  })
+  });
 
-  const classes = useStyles()
+  const classes = useStyles();
 
   return (
     <>
@@ -123,65 +123,68 @@ export default function LoginForm() {
         <Backdrop
           className={classes.backdrop}
           open={open}
-          onClick={handleClose}>
-          <CircularProgress color='inherit' />
+          onClick={handleClose}
+        >
+          <CircularProgress color="inherit" />
         </Backdrop>
       )}
       <Avatar className={classes.avatar}>
         <LockOutlinedIcon />
       </Avatar>
-      <Typography component='h1' variant='h5'>
+      <Typography component="h1" variant="h5">
         Connexion
       </Typography>
       <Formik
         noValidate
         initialValues={{
-          user: '',
-          pwd: '',
+          user: "",
+          pwd: "",
         }}
         validationSchema={schema}
         onSubmit={(values) => {
-          userCnx.mutate(values)
-        }}>
+          userCnx.mutate(values);
+        }}
+      >
         {({ errors }) => (
           <Form className={classes.form}>
             <Controls.TextInput
-              variant='outlined'
-              margin='normal'
+              variant="outlined"
+              margin="normal"
               fullWidth
-              id='user'
-              label='Utilisateur'
-              name='user'
+              id="user"
+              label="Utilisateur"
+              name="user"
               autoFocus
-              type='text'
+              type="text"
               helperText={errors.user}
               error={errors.user && true}
             />
             <Controls.TextInput
-              variant='outlined'
-              margin='normal'
-              fullWidth='true'
-              id='pwd'
-              label='Mot de passe'
-              name='pwd'
-              type='password'
+              variant="outlined"
+              margin="normal"
+              fullWidth="true"
+              id="pwd"
+              label="Mot de passe"
+              name="pwd"
+              type="password"
               helperText={errors.pwd}
               error={errors.pwd && true}
             />
             <Button
-              type='submit'
+              type="submit"
               fullWidth
-              variant='contained'
-              color='primary'
+              variant="contained"
+              color="primary"
               className={classes.submit}
-              disabled={userCnx.isLoading}>
+              disabled={userCnx.isLoading}
+            >
               Sign In
             </Button>
             {/* <Controls.Buttons fullWidth>Connexion</Controls.Buttons> */}
             <Grid container>
               <Grid item>
-                <NavLink to='/sendpwd' variant='body2'>
-                  {'Mot de passe oublié ?'}
+                <NavLink to="/sendpwd" variant="body2">
+                  {"Mot de passe oublié ?"}
                 </NavLink>
               </Grid>
             </Grid>
@@ -198,5 +201,5 @@ export default function LoginForm() {
         setOpen={setOpenNotif}
       />
     </>
-  )
+  );
 }
