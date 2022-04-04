@@ -1,156 +1,180 @@
 /** @format */
 
-import React, { useState, useEffect } from 'react'
-import * as yup from 'yup'
-import axios from '../../../api/axios'
-import ModalForm from '../../../composants/controls/modal/ModalForm'
-import Controls from '../../../composants/controls/Controls'
-import ReadCookie from '../../../functions/ReadCookie'
-import { makeStyles } from '@material-ui/core'
-import { Formik, Form, Field, useField, ErrorMessage } from 'formik'
-import { Grid } from '@material-ui/core'
-import Constantes from '../../../api/Constantes'
-import SpinnerForm from '../../../composants/controls/spinner/SpinnerForm'
+import React, { useState, useEffect } from "react";
+import * as yup from "yup";
+import axios from "../../../api/axios";
+import ModalForm from "../../../composants/controls/modal/ModalForm";
+import Controls from "../../../composants/controls/Controls";
+import ReadCookie from "../../../functions/ReadCookie";
+import { makeStyles } from "@material-ui/core";
+import { Formik, Form, Field, useField, ErrorMessage } from "formik";
+import { Grid } from "@material-ui/core";
+import Constantes from "../../../api/Constantes";
+import SpinnerForm from "../../../composants/controls/spinner/SpinnerForm";
 import {
   useIsMutating,
   useMutation,
   useQuery,
   useQueryClient,
-} from 'react-query'
+} from "react-query";
 
 const useStyles = makeStyles((theme) => ({
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(0),
   },
   buton: {
-    textAlign: 'right',
+    textAlign: "right",
   },
-}))
+}));
 
 function CompteForm(props) {
   // Stats
-  const [typeSubmit, setTypeSubmit] = useState(1)
-  const [defaut, setDefaut] = useState({})
-  const [defautSociete, setDefautSociete] = useState({})
-  const [defautDevise, setDefautDevise] = useState({})
-  const [civilite, setCivilite] = useState([
-    { civ: 'Monsieur' },
-    { civ: 'Madame' },
-    { civ: 'Mademoiselle' },
-  ])
-  const [openNotif, setOpenNotif] = useState(false)
-  const [listBank, setListBank] = useState([])
-  const [listDevise, setListDevise] = useState([])
+  const [typeSubmit, setTypeSubmit] = useState(1);
+  let civilite = [
+    { civ: "Monsieur", code: "M" },
+    { civ: "Madame", code: "Mme" },
+    { civ: "Mademoiselle", code: "Mlle" },
+  ];
+  const [openNotif, setOpenNotif] = useState(false);
+  const [defautBank, setDefautBank] = useState({});
+  const [defautDevise, setDefautDevise] = useState({});
+  const [defautCivilite, setDefautCivilite] = useState({});
 
   // Variables
   // lire les infos du cookie
-  const cookieInfo = ReadCookie()
+  const cookieInfo = ReadCookie();
 
   // Schema de validation du formulaire
   const schema = yup.object().shape({
-    code: yup.string().required('Code obligatoire'),
-    solde_i: yup.number().required('Solde non initialisé'),
-    rib: yup.string().required('RIB obligatoire'),
-    libelle: yup.string().required('Description obligatoire'),
-    banque: yup.string().required('Banque obligatoire'),
-    tel: yup.number('N° de tel invalide'),
-    email: yup.string().email('adresse mail invalide'),
-    civilite: yup.string().required('Civilité obligatoire'),
-    devise: yup.string().required('devise obligatoire'),
-  })
-
-  const fetchDevises = async () => {
-    const headers = {
-      Authorization: cookieInfo,
-    }
-    let response = await axios('devises/ReadDevise.php', {
-      headers,
-    })
-    return response.data
-  }
-  const VueData = useQuery(['listedevise'], fetchDevises, {
-    cacheTime: 1 * 60 * 1000,
-  })
+    code: yup.string().required("Code obligatoire"),
+    solde_i: yup.number().required("Solde non initialisé"),
+    rib: yup.string().required("RIB obligatoire"),
+    libelle: yup.string().required("Description obligatoire"),
+    bank: yup.string().required("Banque obligatoire"),
+    tel: yup.number("N° de tel invalide"),
+    email: yup.string().email("adresse mail invalide"),
+    civilite: yup.string().required("Civilité obligatoire"),
+    devise: yup.string().required("devise obligatoire"),
+  });
 
   const submitCompte = async (values) => {
-    let response = ''
+    let response = "";
     const headers = {
       Authorization: cookieInfo,
-    }
-    if (values.id === '') {
+    };
+    if (values.id === "") {
       // Création societe
       response = await axios.post(
-        'comptes/CreateCompte.php',
+        "comptes/CreateCompte.php",
         { values },
-        { headers },
-      )
+        { headers }
+      );
     } else {
       // Modification societe
       response = await axios.post(
         `comptes/UpdateCompte.php?id=${values.id}`,
         { values },
-        { headers },
-      )
+        { headers }
+      );
     }
-    typeSubmit === 1 && props.handleClose()
+    typeSubmit === 1 && props.handleClose();
 
-    return response.data
-  }
+    return response.data;
+  };
 
   // Création d'une societe
   const compte = useMutation(submitCompte, {
     onSuccess: (data) => {
-      props.queryClient.invalidateQueries('listecompte')
+      props.queryClient.invalidateQueries("listecompte");
       props.setNotify({
         type: data.reponse,
         message: data.message,
-      })
-      props.setOpenNotif(true)
+      });
+      props.setOpenNotif(true);
     },
     onError: () => {
       props.setNotify({
-        message: 'Service indisponible',
-        type: 'error',
-      })
-      props.setOpenNotif(true)
+        message: "Service indisponible",
+        type: "error",
+      });
+      props.setOpenNotif(true);
     },
-  })
+  });
 
-  const classes = useStyles()
+  const classes = useStyles();
 
+  useEffect(() => {
+    if (props.initialModal.data.id) {
+      props.bank.map(
+        (x) => {
+          if (x.id == props.initialModal.data.banq) {
+            // console.log(x);
+            setDefautBank(x);
+          }
+        },
+        [props.initialModal.id]
+      );
+
+      props.devise.map(
+        (x) => {
+          if (x.id == props.initialModal.data.ID_DEVISE) {
+            // console.log(x);
+            setDefautDevise(x);
+          }
+        },
+        [props.initialModal.id]
+      );
+
+      props.bank.map(
+        (x) => {
+          if (x.id == props.initialModal.data.CIV_GESTIONNAIRE_COMPTE) {
+            // console.log(x);
+            setDefautCivilite(x);
+          }
+        },
+        [props.initialModal.id]
+      );
+    } else {
+      setDefautDevise(null);
+      setDefautBank(null);
+      setDefautCivilite(null);
+    }
+  });
   return (
     <>
       <ModalForm
         title={props.titreModal}
         handleClose={props.handleClose}
-        open={props.openModal}>
+        open={props.openModal}
+      >
         <Formik
           noValidate
           initialValues={{
-            id: props.initialModal.id,
-            code: props.initialModal.code,
-            solde_i: props.initialModal.solde,
-            comptable: props.initialModal.comptable,
-            rib: props.initialModal.rib,
-            libelle: props.initialModal.libelle,
-            gestionnaire: props.initialModal.gestionnaire,
-            civilite: props.initialModal.civilite,
-            service: props.initialModal.service,
-            tel: props.initialModal.tel,
-            email: props.initialModal.email,
-            banque: props.initialModal.banque,
-            societe: props.initialModal.societe,
-            devise: props.initialModal.devise,
+            id: props.initialModal.data.id,
+            CODE_COMPTE: props.initialModal.data.CODE_COMPTE,
+            SOLDE_INITIAL_COMPTE: props.initialModal.data.SOLDE_INITIAL_COMPTE,
+            COMPTE_COMPTABLE: props.initialModal.data.COMPTE_COMPTABLE,
+            RIB: props.initialModal.data.RIB,
+            LIBELLE_COMPTE: props.initialModal.data.LIBELLE_COMPTE,
+            CIV_GESTIONNAIRE_COMPTE:
+              props.initialModal.data.CIV_GESTIONNAIRE_COMPTE,
+            SERVICE_GESTIONNAIRE_COMPTE:
+              props.initialModal.data.SERVICE_GESTIONNAIRE_COMPTE,
+            EMAIL_GESTIONNAIRE_COMPTE:
+              props.initialModal.data.EMAIL_GESTIONNAIRE_COMPTE,
+            banq: props.initialModal.data.banq,
+            ID_DEVISE: props.initialModal.data.ID_DEVISE,
           }}
           validationSchema={schema}
           onSubmit={(values, onSubmitProps) => {
             compte.mutate(values, {
               onSuccess: (data) => {
-                data.reponse == 'success' && onSubmitProps.resetForm()
+                data.reponse == "success" && onSubmitProps.resetForm();
               },
-            })
-          }}>
+            });
+          }}
+        >
           {({
             values,
             errors,
@@ -163,170 +187,193 @@ function CompteForm(props) {
           }) => (
             <Form>
               <input
-                id='id'
-                name='id'
-                type='hidden'
-                value={props.initialModal.id || ''}
+                id="id"
+                name="id"
+                type="hidden"
+                value={props.initialModal.id || ""}
               />
               <Grid container spacing={2}>
                 <Grid item xs={6} sm={6} lg={6}>
                   <Controls.TextInput
-                    variant='outlined'
-                    margin='normal'
+                    variant="outlined"
+                    margin="normal"
                     fullWidth
-                    id='code'
-                    label='Code'
+                    id="CODE_COMPTE"
+                    label="Code Compte"
                     autoFocus
-                    type='text'
-                    thelperText={errors.code}
-                    terror={errors.code && true}
-                    name='code'
-                  />
-                  <Controls.TextInput
-                    variant='outlined'
-                    margin='normal'
-                    fullWidth
-                    id='solde_i'
-                    label='Solde initial'
-                    type='text'
-                    thelperText={errors.solde_i}
-                    terror={errors.solde_i && true}
-                    name='solde_i'
-                    style={{ textAlign: 'right' }}
-                  />
-                  <Controls.TextInput
-                    variant='outlined'
-                    margin='normal'
-                    fullWidth
-                    id='comptable'
-                    label='Compte Comptable'
-                    type='text'
-                    thelperText={errors.comptable}
-                    terror={errors.comptable && true}
-                    name='comptable'
-                  />
-                  <Controls.TextInput
-                    variant='outlined'
-                    margin='normal'
-                    fullWidth
-                    id='email'
-                    label='Email'
-                    type='email'
-                    thelperText={errors.email}
-                    terror={errors.email && true}
-                    name='email'
-                  />
-                  <Controls.TextInput
-                    variant='outlined'
-                    margin='normal'
-                    fullWidth
-                    id='rib'
-                    label='RIB'
-                    type='text'
-                    thelperText={errors.rib}
-                    terror={errors.rib && true}
-                    name='rib'
-                  />
-                  <Controls.TextInput
-                    variant='outlined'
-                    margin='normal'
-                    fullWidth
-                    id='libelle'
-                    label='Libellé'
-                    type='text'
-                    thelperText={errors.libelle}
-                    terror={errors.libelle && true}
-                    name='libelle'
+                    type="text"
+                    thelperText={errors.CODE_COMPTE}
+                    terror={errors.CODE_COMPTE && true}
+                    name="CODE_COMPTE"
                   />
                 </Grid>
                 <Grid item xs={6} sm={6} lg={6}>
-                  {/* <Controls.ComboSingle
-                    Authorization={cookieInfo}
-                    api={ApiBanq}
-                    useQuery={Query}
-                    name='banque'
-                    code='CODE_BANQUE'
-                    data={listBank}
-                    defaut={defaut}
-                    onChange={(e, value) => {
-                      setFieldValue('banque', value !== null ? value.id : value)
-                    }}
-                    thelperText={errors.banque}
-                    terror={errors.banque && true}
-                  /> */}
                   <Controls.TextInput
-                    variant='outlined'
-                    margin='normal'
+                    variant="outlined"
+                    margin="normal"
                     fullWidth
-                    id='gestionnaire'
-                    label='gestionnaire'
-                    type='text'
+                    id="SOLDE_INITIAL_COMPTE"
+                    label="Solde initial"
+                    type="text"
+                    thelperText={errors.SOLDE_INITIAL_COMPTE}
+                    terror={errors.SOLDE_INITIAL_COMPTE && true}
+                    name="SOLDE_INITIAL_COMPTE"
+                    style={{ textAlign: "right" }}
+                  />
+                </Grid>
+                <Grid item xs={6} sm={6} lg={6}>
+                  <Controls.TextInput
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    id="COMPTE_COMPTABLE"
+                    label="Compte Comptable"
+                    type="text"
+                    thelperText={errors.COMPTE_COMPTABLE}
+                    terror={errors.COMPTE_COMPTABLE && true}
+                    name="COMPTE_COMPTABLE"
+                  />
+                </Grid>
+                <Grid item xs={6} sm={6} lg={6}>
+                  <Controls.TextInput
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    id="EMAIL_GESTIONNAIRE_COMPTE"
+                    label="Email"
+                    type="EMAIL_GESTIONNAIRE_COMPTE"
+                    thelperText={errors.EMAIL_GESTIONNAIRE_COMPTE}
+                    terror={errors.EMAIL_GESTIONNAIRE_COMPTE && true}
+                    name="EMAIL_GESTIONNAIRE_COMPTE"
+                  />
+                </Grid>
+                <Grid item xs={6} sm={6} lg={6}>
+                  <Controls.TextInput
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    id="RIB"
+                    label="RIB"
+                    type="text"
+                    thelperText={errors.RIB}
+                    terror={errors.RIB && true}
+                    name="RIB"
+                  />
+                </Grid>
+                <Grid item xs={6} sm={6} lg={6}>
+                  <Controls.TextInput
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    id="LIBELLE_COMPTE"
+                    label="Libellé"
+                    type="text"
+                    thelperText={errors.LIBELLE_COMPTE}
+                    terror={errors.LIBELLE_COMPTE && true}
+                    name="LIBELLE_COMPTE"
+                  />
+                </Grid>
+                <Grid item xs={6} sm={6} lg={6}>
+                  <Controls.TextInput
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    id="gestionnaire"
+                    label="gestionnaire"
+                    type="text"
                     thelperText={errors.gestionnaire}
                     terror={errors.gestionnaire && true}
-                    name='gestionnaire'
+                    name="gestionnaire"
                   />
+                </Grid>
+                <Grid item xs={6} sm={6} lg={6}>
                   <Controls.ComboSingle
-                    name='civilite'
-                    code='civ'
+                    name="CIV_GESTIONNAIRE_COMPTE"
                     data={civilite}
-                    defaut={civilite}
+                    defaut={defautCivilite}
+                    code={"civ"}
+                    label="Civilité Gestionnaire"
                     onChange={(e, value) => {
                       setFieldValue(
-                        'civilite',
-                        value !== null ? value.civ : value,
-                      )
+                        "CIV_GESTIONNAIRE_COMPTE",
+                        value !== null ? value.id : value
+                      );
                     }}
-                    thelperText={errors.civilite}
-                    terror={errors.civilite && true}
+                    thelperText={errors.CIV_GESTIONNAIRE_COMPTE}
+                    terror={errors.CIV_GESTIONNAIRE_COMPTE && true}
                   />
+                </Grid>
+                <Grid item xs={6} sm={6} lg={6}>
                   <Controls.TextInput
-                    variant='outlined'
-                    margin='normal'
+                    variant="outlined"
+                    margin="normal"
                     fullWidth
-                    id='service'
-                    label='service'
-                    type='text'
-                    thelperText={errors.service}
-                    terror={errors.service && true}
-                    name='service'
+                    id="SERVICE_GESTIONNAIRE_COMPTE"
+                    label="Service"
+                    type="text"
+                    thelperText={errors.SERVICE_GESTIONNAIRE_COMPTE}
+                    terror={errors.SERVICE_GESTIONNAIRE_COMPTE && true}
+                    name="SERVICE_GESTIONNAIRE_COMPTE"
                   />
+                </Grid>
+                <Grid item xs={6} sm={6} lg={6}>
                   <Controls.TextInput
-                    variant='outlined'
-                    margin='normal'
+                    variant="outlined"
+                    margin="normal"
                     fullWidth
-                    id='tel'
-                    label='tel'
-                    type='text'
-                    thelperText={errors.tel}
-                    terror={errors.tel && true}
-                    name='tel'
+                    id="SERVICE_GESTIONNAIRE_COMPTE"
+                    label="Contact"
+                    type="text"
+                    thelperText={errors.SERVICE_GESTIONNAIRE_COMPTE}
+                    terror={errors.SERVICE_GESTIONNAIRE_COMPTE && true}
+                    name="SERVICE_GESTIONNAIRE_COMPTE"
                   />
+                </Grid>
+                <Grid item xs={6} sm={6} lg={6}>
                   <Controls.ComboSingle
-                    fetchData={fetchDevises}
-                    name='devise'
-                    Authorization={cookieInfo}
-                    code='CODE_DEVISE'
-                    data={VueData.data.infos}
+                    label="Devise"
+                    name="ID_DEVISE"
+                    data={props.devise}
                     defaut={defautDevise}
+                    code={"CODE_DEVISE"}
                     onChange={(e, value) => {
-                      setFieldValue('devise', value !== null ? value.id : value)
+                      setFieldValue(
+                        "ID_DEVISE",
+                        value !== null ? value.id : value
+                      );
                     }}
-                    thelperText={errors.devise}
-                    terror={errors.devise && true}
+                    thelperText={errors.ID_DEVISE}
+                    terror={errors.ID_DEVISE && true}
                   />
-                </Grid>{' '}
+                </Grid>
+                <Grid item xs={6} sm={6} lg={6}>
+                  <Controls.ComboSingle
+                    name="banq"
+                    label="Banque"
+                    data={props.bank}
+                    defaut={defautBank}
+                    code={"CODE_BANQUE"}
+                    onChange={(e, value) => {
+                      setFieldValue("banq", value !== null ? value.id : value);
+                    }}
+                    thelperText={errors.banq}
+                    terror={errors.banq && true}
+                  />
+                </Grid>
               </Grid>
 
               <div className={classes.buton}>
                 <Controls.ButtonLabel
-                  color='primary'
-                  onClick={() => setTypeSubmit(1)}>
+                  color="primary"
+                  onClick={() => setTypeSubmit(1)}
+                >
                   Valider
                 </Controls.ButtonLabel>
-                {props.initialModal.id === '' && (
+                {props.initialModal.id === "" && (
                   <Controls.ButtonLabel
-                    color='secondary'
-                    onClick={() => setTypeSubmit(2)}>
+                    color="secondary"
+                    onClick={() => setTypeSubmit(2)}
+                  >
                     Appliquer
                   </Controls.ButtonLabel>
                 )}
@@ -336,7 +383,7 @@ function CompteForm(props) {
         </Formik>
       </ModalForm>
     </>
-  )
+  );
 }
 
-export default CompteForm
+export default CompteForm;

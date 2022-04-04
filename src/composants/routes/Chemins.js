@@ -19,7 +19,7 @@ import Tiers from "../../pages/Fenetres/tiers/VueTiers";
 import CompteTiers from "../../pages/Fenetres/CompteTiers";
 import Societe from "../../pages/Fenetres/societe/Societe";
 import Utilisateurs from "../../pages/Fenetres/users/VueUser";
-import Banque from "../../pages/Fenetres/Banque";
+import Banque from "../../pages/Fenetres/banque/VueBanque";
 import Compte from "../../pages/Fenetres/comptes/Compte";
 import VueAuditUsers from "../../pages/Fenetres/audit-connexion/VueAudit";
 import AuditsSystem from "../../pages/Fenetres/audit-systeme/VueAudit";

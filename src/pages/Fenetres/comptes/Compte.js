@@ -1,24 +1,24 @@
 /** @format */
 
-import React, { useState } from 'react'
-import PageHeader from '../../../composants/PageHeader'
-import TableData from '../../../composants/tableaux/TableData'
-import { Grid } from '@material-ui/core'
-import BarreButtons from '../../../composants/BarreButtons'
-import Buttons from '../../../composants/controls/Buttons'
-import { makeStyles, withStyles } from '@material-ui/core/styles'
-import CreateIcon from '@material-ui/icons/Create'
-import IconButton from '@material-ui/core/IconButton'
-import ModalOuiNon from '../../../composants/controls/modal/ModalOuiNon'
-import axios from '../../../api/axios'
-import CompteForm from './CompteForm'
-import AddIcon from '@material-ui/icons/Add'
-import { Notification } from '../../../composants/controls/toast/MyToast'
-import CryptFunc from '../../../functions/CryptFunc'
-import GroupBy from '../../../functions/GroupBy'
-import ReadCookie from '../../../functions/ReadCookie'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import DeleteSweepIcon from '@material-ui/icons/DeleteSweep'
+import React, { useState, useEffect } from "react";
+import PageHeader from "../../../composants/PageHeader";
+import TableData from "../../../composants/tableaux/TableData";
+import { Grid } from "@material-ui/core";
+import BarreButtons from "../../../composants/BarreButtons";
+import Buttons from "../../../composants/controls/Buttons";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
+import CreateIcon from "@material-ui/icons/Create";
+import IconButton from "@material-ui/core/IconButton";
+import ModalOuiNon from "../../../composants/controls/modal/ModalOuiNon";
+import axios from "../../../api/axios";
+import CompteForm from "./CompteForm";
+import AddIcon from "@material-ui/icons/Add";
+import { Notification } from "../../../composants/controls/toast/MyToast";
+import CryptFunc from "../../../functions/CryptFunc";
+import GroupBy from "../../../functions/GroupBy";
+import ReadCookie from "../../../functions/ReadCookie";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
 
 // Style
 const useStyles = makeStyles((theme) => ({
@@ -26,319 +26,326 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(0.5),
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
-}))
+}));
 
 function CompteBanque(props) {
   ////////////// Droits de l'utilisateur
-  var MachaineDeCrypte = CryptFunc(localStorage.getItem('_Drt'), 0)
-  const leMenu = GroupBy(MachaineDeCrypte)
-  const DroitsUser = leMenu.group['Eléments paiements'][0]
+  var MachaineDeCrypte = CryptFunc(localStorage.getItem("_Drt"), 0);
+  const leMenu = GroupBy(MachaineDeCrypte);
+  const DroitsUser = leMenu.group["Eléments paiements"][0];
   // droits insuffisants
   const noRightFunc = () => {
     setNotify({
-      type: 'error',
-      message: 'Droits insuffisants',
-    })
-    setOpenNotif(true)
-  }
+      type: "error",
+      message: "Droits insuffisants",
+    });
+    setOpenNotif(true);
+  };
 
   // Stats
-  const [initialModal, setInitialModal] = useState({})
+  const [initialModal, setInitialModal] = useState({
+    data: {},
+  });
   const [notify, setNotify] = useState({
-    type: '',
-    message: '',
-  })
-  const [openNotif, setOpenNotif] = useState(false)
-  const [openModal, setOpenModal] = useState(false)
-  const [openOuiNon, setOpenOuiNon] = useState(false) // statut du modal suppression
-  const [title, setTitle] = useState('')
-  const [item, setItem] = useState()
+    type: "",
+    message: "",
+  });
+  const [openNotif, setOpenNotif] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [openOuiNon, setOpenOuiNon] = useState(false); // statut du modal suppression
+  const [title, setTitle] = useState("");
+  const [item, setItem] = useState();
+  const [listBank, setListBank] = useState([]); // liste des Bank
+  const [listDevise, setListDevise] = useState([]); // liste des Bank
 
   // Variables
-  const Api = 'comptes/ReadCompte.php'
-  const Query = ['listecompte']
-  const cookieInfo = ReadCookie()
+  const Api = "comptes/ReadCompte.php";
+  const Query = ["listecompte"];
+  const cookieInfo = ReadCookie();
 
   // Fermeture du modal
   const handleCloseModal = () => {
-    setOpenModal(false)
-  }
+    setOpenModal(false);
+  };
 
   const handleCloseModalOuiNon = () => {
-    setOpenOuiNon(false)
-  }
+    setOpenOuiNon(false);
+  };
 
   // Modal Supression
   const FuncSuppr = (id) => {
-    setOpenOuiNon(true)
-    setItem(id)
-  }
+    setOpenOuiNon(true);
+    setItem(id);
+  };
 
   // suppression d'une  devise
   const supprCompte = async (item) => {
-    let response = ''
+    let response = "";
     const headers = {
       Authorization: cookieInfo,
-    }
+    };
     response = await axios.get(`societe/DeleteCompte.php?id=${item}`, {
       headers,
-    })
-    setOpenOuiNon(false)
+    });
+    setOpenOuiNon(false);
 
-    return response.data
-  }
+    return response.data;
+  };
 
   // suppression d'un societe
   const supCompte = useMutation(supprCompte, {
     onSuccess: (data) => {
-      queryClient.invalidateQueries('listecompte')
+      queryClient.invalidateQueries("listecompte");
       setNotify({
         type: data.reponse,
         message: data.message,
-      })
-      setOpenNotif(true)
+      });
+      setOpenNotif(true);
     },
     onError: (error) => {
-      console.error(error)
+      console.error(error);
       props.setNotify({
-        message: 'Service indisponible',
-        type: 'error',
-      })
-      props.setOpenNotif(true)
+        message: "Service indisponible",
+        type: "error",
+      });
+      props.setOpenNotif(true);
     },
-  })
+  });
+  // console.log(listBank);
+  ///////////////////// banques
+  // Chargement des banques
+  const fetchDataBank = async () => {
+    const headers = {
+      Authorization: cookieInfo,
+    };
+    let response = await axios("banque/ReadBanque.php", {
+      headers,
+    });
+    return response.data;
+  };
 
-  const handleOpenModal = (
-    id = '',
-    code = '',
-    solde_i = 0,
-    comptable = '',
-    rib = '',
-    libelle = '',
-    gestionnaire = '',
-    civilite = '',
-    service = '',
-    tel = '',
-    email = '',
-    banque = '',
-    societe = '',
-    devise = '',
-  ) => {
-    setInitialModal({
-      id: id,
-      code: code,
-      solde_i: solde_i,
-      comptable: comptable,
-      rib: rib,
-      libelle: libelle,
-      gestionnaire: gestionnaire,
-      civilite: civilite,
-      service: service,
-      tel: tel,
-      email: email,
-      banque: banque,
-      societe: societe,
-      devise: devise,
-    })
+  const VueBank = useQuery(["listebanques"], fetchDataBank, {
+    cacheTime: 1 * 60 * 1000,
+  });
 
+  useEffect(() => {
+    if (VueBank.isSuccess) {
+      setListBank(VueBank.data.infos);
+      // console.log(listProfils);
+    }
+  }, [VueBank]);
+
+  ///////////////////// Devise
+  // Chargement des Devise
+  const fetchDataDevise = async () => {
+    const headers = {
+      Authorization: cookieInfo,
+    };
+    let response = await axios("devises/ReadDevise.php", {
+      headers,
+    });
+    return response.data;
+  };
+
+  const VueDevise = useQuery(["listeDevise"], fetchDataDevise, {
+    cacheTime: 1 * 60 * 1000,
+  });
+
+  useEffect(() => {
+    if (VueDevise.isSuccess) {
+      setListDevise(VueDevise.data.infos);
+      // console.log(listProfils);
+    }
+  }, [VueDevise]);
+
+  // ouverture du modal
+  const handleOpenModal = (data = {}) => {
+    setInitialModal({ data: data });
     //Mise à jour du titre
-    id === '' ? setTitle('Nouveau compte') : setTitle(`Modifier ${code}`)
-
-    setOpenModal(true)
-  }
+    !data.id
+      ? setTitle("Nouvelle banque ")
+      : setTitle(`Modifier ${data.CODE_COMPTE}`);
+    setOpenModal(true);
+  };
 
   // Mise à jour de la liste des retraits après mutation
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   // Entetes du tableau
   const tableHeader = [
     {
-      field: 'id',
+      field: "id",
       hide: true,
       editable: false,
-      headerName: 'id',
+      headerName: "id",
       width: 20,
       columnResizeIcon: true,
     },
     {
-      field: 'CODE_COMPTE',
+      field: "CODE_COMPTE",
       hide: false,
       editable: false,
-      headerName: 'Code',
+      headerName: "Code",
       width: 120,
       columnResizeIcon: true,
     },
     {
-      field: 'LIBELLE_COMPTE',
+      field: "LIBELLE_COMPTE",
       hide: false,
       editable: false,
-      headerName: 'Description',
+      headerName: "Description",
       width: 143,
       columnResizeIcon: true,
     },
     {
-      field: 'CODE_BANQUE',
+      field: "CODE_BANQUE",
       hide: false,
       editable: false,
-      headerName: 'Banque',
+      headerName: "Banque",
       width: 180,
       columnResizeIcon: true,
     },
     {
-      field: 'SOLDE_INITIAL_COMPTE',
+      field: "SOLDE_INITIAL_COMPTE",
       hide: false,
       editable: false,
-      headerName: 'Solde',
+      headerName: "Solde",
       width: 120,
       columnResizeIcon: true,
-      type: 'number',
+      type: "number",
       valueFormatter: (params) => {
-        const valueFormatted = Number(params.value).toLocaleString()
+        const valueFormatted = Number(params.value).toLocaleString();
         //  const valueFormatted = new Intl.NumberFormat().format(params.value)
-        return `${valueFormatted}`
+        return `${valueFormatted}`;
       },
       valueParser: (value) => Number(value),
     },
     {
-      field: 'RIB',
+      field: "RIB",
       hide: false,
       editable: false,
-      headerName: 'RIB',
+      headerName: "RIB",
       width: 250,
       columnResizeIcon: true,
     },
     {
-      field: 'CODE_DEVISE',
+      field: "CODE_DEVISE",
       hide: false,
       editable: false,
-      headerName: 'Devise',
+      headerName: "Devise",
       width: 100,
       columnResizeIcon: true,
     },
     {
-      field: 'COMPTE_COMPTABLE',
+      field: "COMPTE_COMPTABLE",
       hide: false,
       editable: false,
-      headerName: 'Comptablilité',
+      headerName: "Comptablilité",
       width: 150,
       columnResizeIcon: true,
     },
     {
-      field: 'GESTIONNAIRE_COMPTE',
+      field: "GESTIONNAIRE_COMPTE",
       hide: false,
       editable: false,
-      headerName: 'Gestionnaire',
+      headerName: "Gestionnaire",
       width: 200,
       columnResizeIcon: true,
     },
     {
-      field: 'CIV_GESTIONNAIRE_COMPTE',
+      field: "CIV_GESTIONNAIRE_COMPTE",
       hide: true,
       editable: false,
-      headerName: 'Civilité',
+      headerName: "Civilité",
       width: 200,
       columnResizeIcon: true,
     },
     {
-      field: 'SERVICE_GESTIONNAIRE_COMPTE',
+      field: "SERVICE_GESTIONNAIRE_COMPTE",
       hide: false,
       editable: false,
-      headerName: 'Service',
+      headerName: "Service",
       width: 200,
       columnResizeIcon: true,
     },
     {
-      field: 'TEL_GESTIONNAIRE_COMPTE',
+      field: "TEL_GESTIONNAIRE_COMPTE",
       hide: false,
       editable: false,
-      headerName: 'Tel',
+      headerName: "Tel",
       width: 200,
       columnResizeIcon: true,
     },
     {
-      field: 'EMAIL_GESTIONNAIRE_COMPTE',
+      field: "EMAIL_GESTIONNAIRE_COMPTE",
       hide: false,
       editable: false,
-      headerName: 'Email',
+      headerName: "Email",
       width: 200,
       columnResizeIcon: true,
     },
     {
-      field: 'banq',
+      field: "banq",
       hide: true,
       editable: false,
-      headerName: 'IDbanq',
+      headerName: "IDbanq",
       width: 180,
       columnResizeIcon: true,
     },
     {
-      field: 'ID_DEVISE',
+      field: "ID_DEVISE",
       hide: true,
       editable: false,
-      headerName: 'IDdevise',
+      headerName: "IDdevise",
       width: 180,
       columnResizeIcon: true,
     },
     {
-      field: 'Actions',
+      field: "Actions",
       width: 125,
-      align: 'center',
+      align: "center",
       renderCell: (e) => (
         <>
           <IconButton
-            aria-label='update'
-            size='small'
+            aria-label="update"
+            size="small"
             onClick={() => {
               DroitsUser.droits_modifier == 1
-                ? handleOpenModal(
-                    e.row.id,
-                    e.row.CODE_COMPTE,
-                    e.row.SOLDE_INITIAL_COMPTE,
-                    e.row.COMPTE_COMPTABLE,
-                    e.row.RIB,
-                    e.row.LIBELLE_COMPTE,
-                    e.row.CODE_DEVISE,
-                    e.row.COMPTE_COMPTABLE,
-                    e.row.GESTIONNAIRE_COMPTE,
-                    e.row.CIV_GESTIONNAIRE_COMPTE,
-                    e.row.SERVICE_GESTIONNAIRE_COMPTE,
-                    e.row.TEL_GESTIONNAIRE_COMPTE,
-                    e.row.EMAIL_GESTIONNAIRE_COMPTE,
-                    e.row.banq,
-                    e.row.ID_DEVISE,
-                  )
-                : noRightFunc()
-            }}>
+                ? handleOpenModal(e.row)
+                : noRightFunc();
+            }}
+          >
             <CreateIcon
-              fontSize='inherit'
-              color='default'
-              className='CreateIcon'
+              fontSize="inherit"
+              color="default"
+              className="CreateIcon"
             />
           </IconButton>
           <IconButton
-            aria-label='delete'
-            size='small'
+            aria-label="delete"
+            size="small"
             onClick={() => {
               DroitsUser.droits_supprimer == 1
                 ? FuncSuppr(e.row.id)
-                : noRightFunc()
-            }}>
+                : noRightFunc();
+            }}
+          >
             <DeleteSweepIcon
-              color='default'
-              fontSize='inherit'
-              className='DeleteSweepIcon'
+              color="default"
+              fontSize="inherit"
+              className="DeleteSweepIcon"
             />
           </IconButton>
         </>
       ),
     },
-  ]
+  ];
 
   // Classe de style
-  const classes = new useStyles()
+  const classes = new useStyles();
 
   return (
     <>
@@ -347,14 +354,17 @@ function CompteBanque(props) {
         buttons={
           <>
             <Buttons
-              variant='contained'
-              color='primary'
-              size='small'
+              variant="contained"
+              color="primary"
+              size="small"
               onClick={() => {
-                DroitsUser.droits_creer == 1 ? handleOpenModal() : noRightFunc()
+                DroitsUser.droits_creer == 1
+                  ? handleOpenModal()
+                  : noRightFunc();
               }}
               className={classes.button}
-              startIcon={<AddIcon />}>
+              startIcon={<AddIcon />}
+            >
               Créer
             </Buttons>
           </>
@@ -378,14 +388,16 @@ function CompteBanque(props) {
         queryClient={queryClient}
         setNotify={setNotify}
         setOpenNotif={setOpenNotif}
+        bank={listBank}
+        devise={listDevise}
       />
       <ModalOuiNon
         open={openOuiNon}
         onClose={handleCloseModalOuiNon}
-        titre='Suppression'
-        message={'Voulez vous supprimer ce compte ?'}
-        non='Annuler'
-        oui='Oui'
+        titre="Suppression"
+        message={"Voulez vous supprimer ce compte ?"}
+        non="Annuler"
+        oui="Oui"
         deconnect={() => supCompte.mutate(item)}
       />
       <Notification
@@ -395,7 +407,7 @@ function CompteBanque(props) {
         setOpen={setOpenNotif}
       />
     </>
-  )
+  );
 }
 
-export default CompteBanque
+export default CompteBanque;

@@ -24,28 +24,11 @@ const useStyles = makeStyles((theme) => ({
 export default function ComboSingle(props) {
   const [field, meta] = useField(props);
 
-  // Chargement des données
-  // const fetchData = async () => {
-  //   const headers = {
-  //     Authorization: props.Authorization,
-  //   }
-  //   let response = await axios(props.api, {
-  //     headers,
-  //   })
-
-  //   console.log(response.data)
-  //   return response.data
-  // }
-
-  // const VueData = useQuery(props.useQuery, props.fetchData, {
-  //   cacheTime: 1 * 60 * 1000,
-  // })
   const [defaultV, setDefaultV] = useState();
 
   useEffect(() => {
     setDefaultV(props.defaut);
   }, [props.defaut]);
-  // console.log(props.defaut);
 
   const classes = useStyles();
 
@@ -67,7 +50,7 @@ export default function ComboSingle(props) {
               fullWidth={true}
               {...params}
               variant="outlined"
-              label={props.name}
+              label={props.label || props.name}
               placeholder={props.name}
               helperText={meta.touched && meta.error ? props.thelperText : ""}
               error={meta.touched && meta.error ? props.terror : false}

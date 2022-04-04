@@ -30,6 +30,8 @@ function TableData(props) {
     setApi(props.api);
     VueData.refetch();
   }, [props.api]);
+
+  // console.log(VueData);
   return (
     <>
       {VueData.isLoading ? (
